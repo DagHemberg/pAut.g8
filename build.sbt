@@ -9,7 +9,10 @@ lazy val projectName = s"aoc-${SettingsManager.get("year").get}"
 lazy val root = project
   .in(file("."))
   .enablePlugins(Auth, Fetch, Init, Submit)
+  .enablePlugins(SiteScaladocPlugin, GhpagesPlugin)
   .settings(
+    siteSubdirName in SiteScaladoc := "api/latest",
+    git.remoteRepo := "git@github.com:DagHemberg/AdventAutomation.git",
     name := projectName,
     version := "0.1",
     scalaVersion := scala3Version,
