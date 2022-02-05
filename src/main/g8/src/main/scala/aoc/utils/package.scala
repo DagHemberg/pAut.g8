@@ -11,11 +11,11 @@ package object utils:
 
   extension [A](a: A)
     def debug = 
-      println(s"[\${YELLOW}*\${RESET}] \$a")
+      println(s"[${YELLOW}*${RESET}] $a")
       a
     
     def debugAttr[B](f: A => B) = 
-      println(s"[\${YELLOW}*\${RESET}] \${f(a)}")
+      println(s"[${YELLOW}*${RESET}] ${f(a)}")
       a
 
     def debugClean = 
@@ -23,7 +23,7 @@ package object utils:
       a
     
     def warn(f: A => Boolean) = 
-      if f(a) then println(s"[\${RED}!\${RESET}] \$a")
+      if f(a) then println(s"[${RED}!${RESET}] $a")
       a
 
     def log(color: String = "cyan") =
@@ -35,7 +35,7 @@ package object utils:
         case "blue" => BLUE
         case "magenta" => MAGENTA
         case _ => CYAN
-      println(s"[\${col}+\${RESET}] \$a")
+      println(s"[${col}+${RESET}] $a")
       a
 
     /** Uses a [[scala.collection.immutable.LazyList]] to apply any function `A => A` on any object `n` times. */

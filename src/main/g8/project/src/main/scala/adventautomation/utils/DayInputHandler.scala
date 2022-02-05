@@ -14,7 +14,7 @@ object DayInputHandler {
           (day, restArgs.toSeq)
         } match {
           case Failure(e) => {
-            error(s"Invalid day: \$unformattedDay. Please specify a day between 1 and 25")
+            error(s"Invalid day: $unformattedDay. Please specify a day between 1 and 25")
           } 
           case Success((day, args)) => action(day, args)
         }

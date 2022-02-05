@@ -15,27 +15,27 @@ abstract class Problem[A]
 
   def name: String
   def solve(data: Seq[String]): A
-  override def toString = s"Day \$day: \$name"
+  override def toString = s"Day $day: $name"
 
   private def printlln(x: Any = "")(using printResult: Boolean): Unit = if printResult then println(x)
   
   private def error(msg: String, trim: Boolean = false) =
-    s"[\${RED}!\${RESET}] \${if !trim then s"\${RED}Something went wrong\${RESET} " else ""}\$msg"
+    s"[${RED}!${RESET}] ${if !trim then s"${RED}Something went wrong${RESET} " else ""}$msg"
 
   private def success(msg: String) =
-    s"[\${GREEN}o\${RESET}] \${GREEN}\$msg\${RESET}"
+    s"[${GREEN}o${RESET}] ${GREEN}$msg${RESET}"
 
   private def info(msg: String) =
-    s"[\${CYAN}+\${RESET}] \$msg"
+    s"[${CYAN}+${RESET}] $msg"
 
   private def tinyStack(e: Throwable) =
-    s"""|[\${RED}!\${RESET}] \${e.getClass.getSimpleName}: \${e.getMessage}
-        |\${e.getStackTrace
+    s"""|[${RED}!${RESET}] ${e.getClass.getSimpleName}: ${e.getMessage}
+        |${e.getStackTrace
             .dropWhile(!_.toString.startsWith("aoc"))
             .takeWhile(!_.toString.startsWith("aoc.utils.Problem"))
             .dropRight(1)
             .toVector
-            .map(s => s"      \$s")
+            .map(s => s"      $s")
             .mkString("\n")}""".stripMargin
 
 
@@ -45,12 +45,12 @@ abstract class Problem[A]
     Try(os.read.lines(wd / "resources" / "input" / folder / year / file).toVector) match
       case Success(lines) => Some(lines)
       case Failure(e) =>
-        printlln(s"""|\${error(s"when reading \$file in \$folder/\$year")}:
-                     |    \${e}""".stripMargin)(using printResult = true)
+        printlln(s"""|${error(s"when reading $file in $folder/$year")}:
+                     |    ${e}""".stripMargin)(using printResult = true)
         None
 
-  val exampleInput = readFile("examples", year, s"\$day.txt")
-  val puzzleInput = readFile("puzzles", year, s"\$day.txt")
+  val exampleInput = readFile("examples", year, s"$day.txt")
+  val puzzleInput = readFile("puzzles", year, s"$day.txt")
 
   private def solve(data: Option[Vector[String]]): Option[TimedEval[A]] = data.map(d => time(solve(d)))
 
@@ -64,21 +64,21 @@ abstract class Problem[A]
     printlln(info("Evaluating example input..."))
 
     def solvingError(name: String, e: Throwable) = 
-      printlln(s"""|\${error(s"when solving the \$name problem:")}
-                   |\${tinyStack(e)}""".stripMargin)
+      printlln(s"""|${error(s"when solving the $name problem:")}
+                   |${tinyStack(e)}""".stripMargin)
       None
 
     def solvingFail(name: String, eval: TimedEval[A]) = 
-      printlln(f"""|\${error(s"\${RED}Example failed!\${RESET}", trim = true)}
-                   |    Expected: \${CYAN}\${expectedExampleSolution}\${RESET}
-                   |    Actual:   \${YELLOW}\${eval.result}\${RESET}
-                   |    Time: \${eval.duration}%2.6f s""".stripMargin)
+      printlln(f"""|${error(s"${RED}Example failed!${RESET}", trim = true)}
+                   |    Expected: ${CYAN}${expectedExampleSolution}${RESET}
+                   |    Actual:   ${YELLOW}${eval.result}${RESET}
+                   |    Time: ${eval.duration}%2.6f s""".stripMargin)
       None
 
     def solvingSuccess(name: String, eval: TimedEval[A]) =
-      printlln(f"""|\${success(s"\${name.capitalize} input passed!")}
-                   |    Output: \${YELLOW}\${eval.result}\${RESET}
-                   |    Time: \${eval.duration}%2.6f s%n""".stripMargin)
+      printlln(f"""|${success(s"${name.capitalize} input passed!")}
+                   |    Output: ${YELLOW}${eval.result}${RESET}
+                   |    Time: ${eval.duration}%2.6f s%n""".stripMargin)
       Some(eval)
 
     val result = Try(solve(exampleInput)) match
@@ -99,7 +99,7 @@ abstract class Problem[A]
       case None => 
       case Some(eval) =>
         val date = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(java.util.Date())
-        val res = s"\$date;\$year;\$day;\$part;\${f"\${eval.duration}%2.6f"}s;\${eval.result};not submitted"
+        val res = s"$date;$year;$day;$part;${f"${eval.duration}%2.6f"}s;${eval.result};not submitted"
         val file = wd / "resources" / "results.csv"
         val current = os.read.lines(file)
         val found = current.tail
@@ -109,9 +109,9 @@ abstract class Problem[A]
           case Some("submitted") => 
             "This solution has already been submitted and verified to be correct!".log()
           case Some("not submitted") => 
-            val m = current.map(s => if s contains s"\$year;\$day;\$part" then res else s).toSeq
+            val m = current.map(s => if s contains s"$year;$day;$part" then res else s).toSeq
             os.write.over(file, m.mkString("", "\n", "\n"))
-          case None | Some(_) => os.write.append(file, s"\$res\n")
+          case None | Some(_) => os.write.append(file, s"$res\n")
 
     result
 

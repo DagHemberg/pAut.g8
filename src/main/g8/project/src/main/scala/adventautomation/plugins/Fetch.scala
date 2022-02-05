@@ -19,21 +19,21 @@ object Fetch extends AutoPlugin {
     fetch := {
       import sys.process._
       handleDayInput(spaceDelimited("<day>").parsed) { (uday, _) =>
-        val day = f"\${uday}%02d"
+        val day = f"${uday}%02d"
         val year = SettingsManager.get("year").getOrElse("N/A")
         if (year == "N/A") {
           error("Please set the year using 'year set <year>' before fetching the input data.")
         } else {
-          val sampleFile = file(s"src/main/resources/input/examples/\$year/\$day.txt")
-          val puzzleFile = file(s"src/main/resources/input/puzzles/\$year/\$day.txt")
+          val sampleFile = file(s"src/main/resources/input/examples/$year/$day.txt")
+          val puzzleFile = file(s"src/main/resources/input/puzzles/$year/$day.txt")
           if (Seq(sampleFile, puzzleFile).exists(_.exists())) {
-            error(s"Data for day \$uday has already been fetched")
+            error(s"Data for day $uday has already been fetched")
           } else {
             val cookie = SettingsManager.get("token").getOrElse("")
-            val url = s"https://adventofcode.com/\$year/day/\$uday/input"
+            val url = s"https://adventofcode.com/$year/day/$uday/input"
             val userAgent = "Scala AdventOfCode Helper v0.1"
-            val command = s"curl --silent -A '\$userAgent' --cookie 'session=\$cookie' '\$url'"
-            val input = s"""bash -c "\${command}"""".!!
+            val command = s"curl --silent -A '$userAgent' --cookie 'session=$cookie' '$url'"
+            val input = s"""bash -c "${command}"""".!!
   
             input match {
   
@@ -43,21 +43,21 @@ object Fetch extends AutoPlugin {
               }
   
               case data if data.startsWith("404") => {
-                error(s"Day \$day in year \$year doesn't appear to exist on AoC yet. Try again later? (But don't spam!)")
+                error(s"Day $day in year $year doesn't appear to exist on AoC yet. Try again later? (But don't spam!)")
               }
   
               case data => {
                 IO.write(puzzleFile, data)
-                IO.write(sampleFile, s"Please paste the example input for day \$day here!")
+                IO.write(sampleFile, s"Please paste the example input for day $day here!")
                 sys.props("os.name") match {
-                  case os if os.startsWith("Windows") => s"cmd /c start \${sampleFile.getPath()}".!!
-                  case os if os.toLowerCase.contains("mac") => s"open \${sampleFile.getPath()}".!! // not tested
+                  case os if os.startsWith("Windows") => s"cmd /c start ${sampleFile.getPath()}".!!
+                  case os if os.toLowerCase.contains("mac") => s"open ${sampleFile.getPath()}".!! // not tested
                   case _ => {
-                    warn(s"Couldn't open \$sampleFile in your default text editor")
+                    warn(s"Couldn't open $sampleFile in your default text editor")
                     warn("Please edit the file manually to provide example input to the problems.")
                   } 
                 }
-                suc(s"Fetched data for day \$day")
+                suc(s"Fetched data for day $day")
               }
             }
           }

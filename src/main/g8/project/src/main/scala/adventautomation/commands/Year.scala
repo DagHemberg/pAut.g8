@@ -17,7 +17,7 @@ object Year {
 
     def getYear(fnd: String) = {
       fnd match {
-        case yr if Try(yr.toInt).isSuccess => println(s"[info] year is currently set to \$yr")
+        case yr if Try(yr.toInt).isSuccess => println(s"[info] year is currently set to $yr")
         case _ => println("[info] year has not been set, please do so with 'year set <year>'")
       } 
       state
@@ -40,7 +40,7 @@ object Year {
           state
         }
         case _ => { 
-          error(s"Invalid command: \$command")
+          error(s"Invalid command: $command")
           state
         }
       }
@@ -59,7 +59,7 @@ object Year {
             def isValidYear(yr: String) = Try(yr.toInt).isSuccess && 2015 <= yr.toInt && yr.toInt <= currentYear
             year match {
               case yr if yr == foundYear => {
-                error(s"Year already set to \$yr")
+                error(s"Year already set to $yr")
                 state
               }
               case yr if isValidYear(yr) => {
@@ -67,17 +67,17 @@ object Year {
                 if (yr.toInt == currentYear && currentMonth < 12) {
                   warn("It doesn't appear to be December (in EST) yet. Please note that fetching data for this year will not work until then")
                 }
-                suc(s"Year has been set to \$yr")
+                suc(s"Year has been set to $yr")
                 state.reload
               }
               case _ => {
-                error(s"Please provide a valid year between 2015 and \$currentYear")
+                error(s"Please provide a valid year between 2015 and $currentYear")
                 state
               }
             }
           }
           case _ => {
-            error(s"Invalid command: \$command.")
+            error(s"Invalid command: $command.")
             state
           }
         } 
