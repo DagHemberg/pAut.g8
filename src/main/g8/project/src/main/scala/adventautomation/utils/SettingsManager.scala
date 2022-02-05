@@ -9,7 +9,7 @@ object SettingsManager {
   def get(name: String) = scala.io.Source
     .fromFile(settingsPath)
     .getLines()
-    .find(_.startsWith(s"$name="))
+    .find(_.startsWith(s"\$name="))
     .flatMap(x => {
       val s = x.split("=")
       if (s.size > 1) Some(s.last) else None
@@ -19,13 +19,13 @@ object SettingsManager {
     val settings = scala.io.Source.fromFile(settingsPath).getLines().toVector
     IO.write(
       file(settingsPath), 
-      if (settings.find(_.startsWith(s"$name=")).isDefined) {
+      if (settings.find(_.startsWith(s"\$name=")).isDefined) {
         settings.map {
-          case line if line.startsWith(s"$name=") => s"$name=$value"
+          case line if line.startsWith(s"\$name=") => s"\$name=\$value"
           case line => line
         }.mkString("\n")
       } else {
-        s"${settings.mkString("\n")}\n$name=$value"
+        s"\${settings.mkString("\n")}\n\$name=\$value"
       }
     )
   }

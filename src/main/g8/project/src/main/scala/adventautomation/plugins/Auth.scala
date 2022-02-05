@@ -28,9 +28,9 @@ object Auth extends AutoPlugin {
         } else {
           inf(s"Attempting to authenticate with AoC servers...")
           val regex = "(?<=<div class=\"user\">)(.*)(?= <span)".r
-          regex.findFirstIn(s"""bash -c "curl --silent -A 'Scala AdventOfCode Helper v0.1' --cookie 'session=$sessionToken' 'https://adventofcode.com'"""".!!) match {
+          regex.findFirstIn(s"""bash -c "curl --silent -A 'Scala AdventOfCode Helper v0.1' --cookie 'session=\$sessionToken' 'https://adventofcode.com'"""".!!) match {
             case Some(name) => {
-              suc(s"Logged in as: ${YELLOW}$name${RESET}")
+              suc(s"Logged in as: \${YELLOW}\$name\${RESET}")
               SettingsManager.set("token", sessionToken)
               SettingsManager.set("username", name)
               suc(s"Set session token")
@@ -58,9 +58,9 @@ object Auth extends AutoPlugin {
           case Some(token) => {
             SettingsManager.get("username") match {
               case None => 
-              case Some(name) => inf(s"Logged in as: ${YELLOW}$name${RESET}")
+              case Some(name) => inf(s"Logged in as: \${YELLOW}\$name\${RESET}")
             }
-            inf(s"Current session token: $token")
+            inf(s"Current session token: \$token")
             inf("Run 'auth set <sessionToken>' to set a new token, or run 'auth <clear|reset>' to clear the session token")
           }
         }
@@ -79,7 +79,7 @@ object Auth extends AutoPlugin {
             case "clear" | "reset" => resetAuth
             case "get" | "status" => getAuth
             case "set" => tryAuth(token)
-            case _ => error(s"Invalid command: $cmd")
+            case _ => error(s"Invalid command: \$cmd")
           }
         }
       }

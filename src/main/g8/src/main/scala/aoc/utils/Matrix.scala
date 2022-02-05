@@ -4,7 +4,7 @@ import math.*
 
 /** A helper class for [[aoc.utils.Matrix]] used for indexing. */
 case class Index(row: Int, col: Int):
-  override def toString: String = s"($row, $col)"
+  override def toString: String = s"(\$row, \$col)"
   lazy val up = Index(row - 1, col)
   lazy val down = Index(row + 1, col)
   lazy val left = Index(row, col - 1)
@@ -47,7 +47,7 @@ case class Matrix[A](input: Vector[Vector[A]]):
           ((a, b) => a.toString.reverse.padTo(b, ' ').reverse)
         .mkString
       
-      s"\n⎛${pad(input.head)} ⎞${if input.size == 2 then "" else s"\n${input.init.tail.map(row => s"⎜${pad(row)} ⎟").mkString("\n")}"}\n⎝${pad(input.last)} ⎠"
+      s"\n⎛\${pad(input.head)} ⎞\${if input.size == 2 then "" else s"\n\${input.init.tail.map(row => s"⎜\${pad(row)} ⎟").mkString("\n")}"}\n⎝\${pad(input.last)} ⎠"
 
   def apply(row: Int, col: Int): A = input(row)(col)
   def apply(index: Index): A = input(index.row)(index.col)

@@ -10,14 +10,14 @@ object Cost:
   * @param cost the cost of traveling along this edge
   */
 case class Edge[N](from: N, to: N, cost: Cost):
-  override  def toString = s"$from -> $to @ $cost"
+  override  def toString = s"\$from -> \$to @ \$cost"
 
 /** 
   * @param vertices the ordered sequence of vertices making up the path
   * @param cost the total cost of the path
   */
 case class Path[N](vertices: Seq[N], cost: Cost):
-  override def toString = s"[${vertices.mkString(" -> ")}] @ $cost"
+  override def toString = s"[\${vertices.mkString(" -> ")}] @ \$cost"
 
 /** A utility class for calculating the shortest path between two generic vertices in a graph. 
   * Uses the Dijkstra algorithm, with an optional heuristic method parameter to make it A*.

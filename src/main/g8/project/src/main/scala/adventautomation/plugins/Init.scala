@@ -19,10 +19,10 @@ object Init extends AutoPlugin {
     init := {
       def createFile(file: File, content: String) = {
         if (file.exists()) {
-          inf(s"File ${file.getPath()} already exists, skipping...")
+          inf(s"File \${file.getPath()} already exists, skipping...")
         } else {
           IO.write(file, content)
-          inf(s"Created file ${file.getPath()}")
+          inf(s"Created file \${file.getPath()}")
         }
       }
 
@@ -31,16 +31,16 @@ object Init extends AutoPlugin {
         if (year == "N/A") {
           error("Please set the year with 'year set <year>' beofre initalizing days")
         } else {
-          val day = f"${uDay}%02d"
-          val folder = s"src/main/scala/aoc/$year/day$day${
+          val day = f"\${uDay}%02d"
+          val folder = s"src/main/scala/aoc/\$year/day\$day\${
             if (nameArgs.isEmpty) "" 
-            else s"-${nameArgs.mkString("-").toLowerCase}"
+            else s"-\${nameArgs.mkString("-").toLowerCase}"
           }"
-          val pkg = file(s"$folder/package.scala")
-          def part(n: Int) = file(s"$folder/Part$n.scala")
-          val testing = file(s"$folder/testing.worksheet.sc")
+          val pkg = file(s"\$folder/package.scala")
+          def part(n: Int) = file(s"\$folder/Part\$n.scala")
+          val testing = file(s"\$folder/testing.worksheet.sc")
 
-          inf(s"Initializing day $day...")
+          inf(s"Initializing day \$day...")
           createFile(testing, "")
 
           createFile(pkg, 
@@ -59,7 +59,7 @@ object Init extends AutoPlugin {
           
             // IO.write(
             //   file("src/main/scala/aoc/utils/ProblemList.scala"), 
-            //   s"list += aoc.y${year}.day${day}.Part${n}\n    ", 
+            //   s"list += aoc.y\${year}.day\${day}.Part\${n}\n    ", 
             //   append = true
             // )
           }

@@ -31,14 +31,14 @@ object Submit extends AutoPlugin {
             case Right(answer) => {
               val mode = "-X POST"
               val agent = "-A 'Scala AdventAutomation v0.1'"
-              val desc = s"-d 'level=$part&answer=$answer'"
-              val auth = s"--cookie 'session=$token'"
-              val url = s"https://adventofcode.com/$year/day/$day/answer"
+              val desc = s"-d 'level=\$part&answer=\$answer'"
+              val auth = s"--cookie 'session=\$token'"
+              val url = s"https://adventofcode.com/\$year/day/\$day/answer"
               
-              inf(s"Submitting answer for day $day, part $part in year $year...")
+              inf(s"Submitting answer for day \$day, part \$part in year \$year...")
   
-              val command = s"curl --silent $agent $mode $desc $auth $url"
-              val result = s"""bash -c "$command"""".!!
+              val command = s"curl --silent \$agent \$mode \$desc \$auth \$url"
+              val result = s"""bash -c "\$command"""".!!
 
               result match {
                 case res if res startsWith "404" => 
@@ -52,15 +52,15 @@ object Submit extends AutoPlugin {
                   IO.write(
                     file, 
                     current.map(line => 
-                      if (line contains s"$year;${f"$day%02d"};$part") line.replace("not submitted", "submitted") 
+                      if (line contains s"\$year;\${f"\$day%02d"};\$part") line.replace("not submitted", "submitted") 
                       else line
                     ).mkString("\n")
                   )
-                  suc(s"${YELLOW}Correct${RESET} answer!") 
-                  suc(s"Head to ${
+                  suc(s"\${YELLOW}Correct\${RESET} answer!") 
+                  suc(s"Head to \${
                     part match {
-                      case "1" => s"${CYAN}https://adventofcode.com/$year/day/$day#part2${RESET}"
-                      case "2" => s"${CYAN}https://adventofcode.com/$year/day/${day + 1}${RESET}"
+                      case "1" => s"\${CYAN}https://adventofcode.com/\$year/day/\$day#part2\${RESET}"
+                      case "2" => s"\${CYAN}https://adventofcode.com/\$year/day/\${day + 1}\${RESET}"
                     }
                   } to continue on your journey!")
   
@@ -68,15 +68,15 @@ object Submit extends AutoPlugin {
                   error(s"That's not the right answer.")
                   res match {
                     case hint if hint contains "too low" => 
-                      error(s"Hint: Your answer was ${YELLOW}too low${RESET}.")
+                      error(s"Hint: Your answer was \${YELLOW}too low\${RESET}.")
 
                     case hint if hint contains "too high" => 
-                      error(s"Hint: Your answer was ${YELLOW}too high${RESET}.")
+                      error(s"Hint: Your answer was \${YELLOW}too high\${RESET}.")
 
                     case hint => error(s"No hint was given.")
                   }
                   val time = "(?<=  Please wait )(.*)(?= before)".r.findFirstIn(res).getOrElse("N/A")
-                  error(s"Please wait $time before submitting another answer.")
+                  error(s"Please wait \$time before submitting another answer.")
 
                 case res if res contains "You don't seem to be solving the right level" => {
                   error("You don't seem to be solving the right level. Either you don't have access to this problem yet or you've already solved it.")
@@ -84,7 +84,7 @@ object Submit extends AutoPlugin {
 
                 case res if res contains "too recently" => {
                   val timeLeft = "(?<=  You have )(.*)(?= left to wait)".r.findFirstIn(res).getOrElse("N/A")
-                  error(s"You submitted an answer too recently. Please wait ${timeLeft} before submitting again.")
+                  error(s"You submitted an answer too recently. Please wait \${timeLeft} before submitting again.")
                 }
 
                 case res if res.isEmpty => 
@@ -92,11 +92,11 @@ object Submit extends AutoPlugin {
               }
             }
             case Left("not found") => 
-              error(s"No answer found for day $day, part $part in year $year")
+              error(s"No answer found for day \$day, part \$part in year \$year")
             case Left("already submitted") =>
-              error(s"Answer for day $day, part $part in year $year has already been submitted")
+              error(s"Answer for day \$day, part \$part in year \$year has already been submitted")
             case Left(err) => 
-              error(s"idk what happened. $err")
+              error(s"idk what happened. \$err")
           }
         } else {
           error("Year not specified. Please either set the year using 'year set <year>'")
@@ -109,7 +109,7 @@ object Submit extends AutoPlugin {
           .fromFile("./src/main/resources/results.csv").getLines()
           .toVector
         
-        val d = f"$day%02d"
+        val d = f"\$day%02d"
 
         current
           .tail
@@ -135,7 +135,7 @@ object Submit extends AutoPlugin {
                   val y = year.toInt
                   require(2015 <= y && y <= currentYear)
                 } match {
-                  case Failure(_) => error(s"Please provide a year between 2015 and $currentYear (or leave empty to use the currently set year)")
+                  case Failure(_) => error(s"Please provide a year between 2015 and \$currentYear (or leave empty to use the currently set year)")
                   case Success(_) => submitAnswer(day, part, year)
                 }
               }

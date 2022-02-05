@@ -4,7 +4,7 @@ import adventautomation.commands.Year._
 
 val scala3Version = "3.1.0"
 
-lazy val projectName = s"aoc-${SettingsManager.get("year").get}"
+lazy val projectName = s"aoc-\${SettingsManager.get("year").get}"
 
 lazy val root = project
   .in(file("."))
