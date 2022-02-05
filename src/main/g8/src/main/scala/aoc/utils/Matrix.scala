@@ -22,6 +22,12 @@ case class Index(row: Int, col: Int):
   def neighborsOrthIn[A](using mat: Matrix[A]) = neighboursOrth.filterNot(mat.indexOutsideBounds).map(mat.apply)  
   def neighboursDiagIn[A](using mat: Matrix[A]) = neighboursDiag.filterNot(mat.indexOutsideBounds).map(mat.apply)
 
+/** A generic Matrix class. Useful for working with 2D structures.
+ * @tparam A The type of elements in the matrix. When `A` is a [[scala.Numeric]] type, a number of extension methods are made available which allow for basic mathematical matrix operations.
+ * @param rows The number of rows in the matrix.
+ * @param cols The number of columns in the matrix.
+ * @param size A tuple of the height and width of the matrix.
+*/
 case class Matrix[A](input: Vector[Vector[A]]):
   require(input.forall(_.size == input.head.size), "All rows must have the same length")
   require(input.size > 0, "Matrix must have at least one row")
@@ -29,7 +35,7 @@ case class Matrix[A](input: Vector[Vector[A]]):
 
   lazy val height = input.size
   lazy val width = input.head.size
-  lazy val size = (input.size, input.head.size)
+  lazy val size = (height, width)
 
   // doesn't work super well with other multi-line toStrings 
   override def toString = 
@@ -110,7 +116,7 @@ case class Matrix[A](input: Vector[Vector[A]]):
 
   def zipWithIndex: Matrix[(A, Index)] = this zip indices
 
-  def zipWith(other: Matrix[A])(f: (A, A) => A): Matrix[A] =
+  def zipWith[B, C](other: Matrix[B])(f: (A, B) => C): Matrix[C] =
     (this zip other).map(f.tupled)
 
 object Matrix:
