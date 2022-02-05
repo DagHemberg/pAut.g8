@@ -11,7 +11,7 @@ lazy val root = project
   .enablePlugins(Auth, Fetch, Init, Submit)
   .enablePlugins(SiteScaladocPlugin, GhpagesPlugin)
   .settings(
-    siteSubdirName in SiteScaladoc := "api/latest",
+    SiteScaladoc / siteSubdirName := "api/latest",
     git.remoteRepo := "git@github.com:DagHemberg/AdventAutomation.git",
     name := projectName,
     version := "0.1",
