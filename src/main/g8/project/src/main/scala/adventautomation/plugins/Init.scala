@@ -45,16 +45,16 @@ object Init extends AutoPlugin {
 
           createFile(pkg, 
             IO.read(file(s"src/main/resources/templates/package.txt"))
-              .replace("$DAY", day)
-              .replace("$YEAR", year))
+              .replace("@DAY", day)
+              .replace("@YEAR", year))
           
           for (n <- 1 to 2) { 
             createFile(part(n), IO
               .read(file(s"src/main/resources/templates/problem.txt"))
-              .replace("$PART", n.toString)
-              .replace("$DAY", day)
-              .replace("$NAME", if (nameArgs.isEmpty) "N/A" else nameArgs.mkString(" "))
-              .replace("$YEAR", year)
+              .replace("@PART", n.toString)
+              .replace("@DAY", day)
+              .replace("@NAME", if (nameArgs.isEmpty) "N/A" else nameArgs.mkString(" "))
+              .replace("@YEAR", year)
             )
           
             // IO.write(

@@ -1,5 +1,5 @@
-package aoc.y$YEAR
+package aoc.y@YEAR
 import aoc.utils.*
 
-package object day$DAY:
+package object day@DAY:
   def removeMe = "Use functions and variables defined here in both parts 1 and 2!"
