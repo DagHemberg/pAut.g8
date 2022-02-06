@@ -9,14 +9,14 @@ object Cost:
   * @param to the destination vertex
   * @param cost the cost of traveling along this edge
   */
-case class Edge[N](from: N, to: N, cost: Cost):
+case class Edge[V](from: V, to: V, cost: Cost):
   override  def toString = s"$from -> $to @ $cost"
 
 /** 
   * @param vertices the ordered sequence of vertices making up the path
   * @param cost the total cost of the path
   */
-case class Path[N](vertices: Seq[N], cost: Cost):
+case class Path[V](vertices: Seq[V], cost: Cost):
   override def toString = s"[${vertices.mkString(" -> ")}] @ $cost"
 
 /** A utility class for calculating the shortest path between two generic vertices in a graph. 
@@ -29,7 +29,7 @@ case class Path[N](vertices: Seq[N], cost: Cost):
   */
 case class Pathfinder[V](graph: Set[Edge[V]], start: V, end: V, heuristic: V => Cost = (n: V) => 0):
   import scala.collection.mutable as mutable
-  private case class CostVertex(node: V, cost: Cost)
+  private case class CostVertex(vertex: V, cost: Cost)
   private def vertexOrder = new Ordering[CostVertex]:
     def compare(a: CostVertex, b: CostVertex) = b.cost compare a.cost
 
@@ -39,14 +39,14 @@ case class Pathfinder[V](graph: Set[Edge[V]], start: V, end: V, heuristic: V => 
     val queue = mutable.PriorityQueue(CostVertex(start, 0))(vertexOrder)
     val previous = mutable.Map.empty[V, V]
     val distance = mutable.Map.empty[V, Cost] withDefaultValue Cost.MaxValue    
-    distance(start) = 0    
+    distance(start) = 0
 
     var found = false
     while !found && queue.nonEmpty do
-      val min = queue.dequeue.node
+      val min = queue.dequeue.vertex
 
       if min == end then found = true
-      else for edge <- edges(min) do
+      else if edges isDefinedAt min then for edge <- edges(min) do
         val alt = distance(min) + edge.cost
         val destination = edge.to
         if alt < distance(destination) then
