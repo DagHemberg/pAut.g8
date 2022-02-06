@@ -2,7 +2,7 @@
 
 A small library for handling manual tasks in [Advent of Code](https://adventofcode.com) a bit more streamlined, right within SBT.
 
-You can view the code docs [here](https://daghemberg.github.io/AdventAutomation).
+You can view the code docs [here](https://daghemberg.github.io/AdventAutomation.g8).
 
 ## Program Usage
 
