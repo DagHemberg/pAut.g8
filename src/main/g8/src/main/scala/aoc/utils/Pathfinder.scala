@@ -33,9 +33,11 @@ case class Pathfinder[V](graph: Set[Edge[V]], start: V, end: V, heuristic: V => 
   private def vertexOrder = new Ordering[CostVertex]:
     def compare(a: CostVertex, b: CostVertex) = b.cost compare a.cost
 
-  /** Finds the shortest from the given start node to the end node in the given graph. */
+  /** Finds the shortest path from the given starting vertex to the destination vertex in the given graph.
+    * @return `Some(Path)` if such a path exists, `None` otherwise.
+    */
   def shortestPath =
-    val edges = graph.groupBy(_.from)
+    val edges = graph groupBy (_.from) withDefaultValue Set.empty
     val queue = mutable.PriorityQueue(CostVertex(start, 0))(vertexOrder)
     val previous = mutable.Map.empty[V, V]
     val distance = mutable.Map.empty[V, Cost] withDefaultValue Cost.MaxValue    
@@ -46,7 +48,7 @@ case class Pathfinder[V](graph: Set[Edge[V]], start: V, end: V, heuristic: V => 
       val min = queue.dequeue.vertex
 
       if min == end then found = true
-      else if edges isDefinedAt min then for edge <- edges(min) do
+      else for edge <- edges(min) do
         val alt = distance(min) + edge.cost
         val destination = edge.to
         if alt < distance(destination) then
