@@ -6,7 +6,15 @@ You can view the code docs [here](https://daghemberg.github.io/AdventAutomation)
 
 ## Program Usage
 
-Use `run` to get a list of the created problems.
+To use this template program, run 
+
+```
+sbt new DagHemberg/AdventAutomation.g8
+```
+
+in the intended root directory of your project.
+
+When initalized, run `sbt` to start the sbt shell and get quick access to all the functionality of the program.
 
 ### Commands / Tasks
 
