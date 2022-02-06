@@ -27,7 +27,7 @@ When initalized, run `sbt` to start the sbt shell and get quick access to all th
 
 ### Run
 
-Usage:
+Usage:  
 `run`
 
 Runs the Scala project. Since all initialized problems are extensions of the `Problem` class, which in turn extends `App`, sbt will bring up a list of all problems and you can select which one to run from there.
@@ -44,7 +44,7 @@ Initializes parts 1 and 2, a common package file, and a worksheet file, for the 
 
 #### Auth
 
-Usage:
+Usage:  
 **`auth set <sessionCookie>`**
 
 Sets the authetication token used for communicating with AoC. **Required** for usage of `submit` or `fetch`.  
@@ -74,7 +74,7 @@ Fetches the input data for the given day in the currently set year. Also opens t
 
 #### Year
 
-Usage:
+Usage:  
 **`year set <year>`**
 
 Sets the current year. Used in `fetch`, `init` and `submit`.
@@ -85,7 +85,7 @@ Retrieves the current year.
 
 #### Submit
 
-Usage:
+Usage:  
 **`submit <day> <part> [year]`**
 
 Attempts to submit the latest successful solution to given problem to AoC. Gives feedback on the result similar to the actual website (e.g "Wait x seconds to submit again", "The answer was too high", etc). Won't submit again if the correct answer has already been submitted.
