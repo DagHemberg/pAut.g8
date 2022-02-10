@@ -39,7 +39,7 @@ package object utils:
       a
     
   extension [A](xs: IndexedSeq[A])
-    /** Zips two sequences and applies a function on the resulting tuples */
+    /** Zips two sequences and applies a function on the resulting tuples. Functionally equivalent to `.zip(...).map(...)`. */
     def zipWith[B, C](ys: IndexedSeq[B])(f: (A, B) => C) =
       (xs zip ys).map(f.tupled)
 
@@ -56,10 +56,12 @@ package object utils:
       require(xs.size == 3)
       Pos3D(xs(0).toInt, xs(1).toInt, xs(2).toInt)
 
+    /** Computes the [dot product](https://en.wikipedia.org/wiki/Dot_product) of 2 vectors of the same length. */
     infix def dot (ys: Vector[A]) = 
       require(xs.size == ys.size, "Vectors must be the same size")
       (xs zip ys map (_ * _)).sum
 
+    /** Computes the [cross product](https://en.wikipedia.org/wiki/Cross_product) of 2 vectors of length 3. */
     infix def cross (ys: Vector[A]) = 
       require(xs.size == 3 && ys.size == 3, "Cross product only defined for 3D vectors")
       Vector(
@@ -68,7 +70,10 @@ package object utils:
         xs(0) * ys(1) - xs(1) * ys(0)
       )
 
+    /** Returns the [magnitude](https://en.wikipedia.org/wiki/Magnitude_(mathematics)#Vector_spaces) of the vector. */
     def magnitude = math.sqrt((xs dot xs).toDouble)
+
+    /** Returns a [normalized](https://en.wikipedia.org/wiki/Unit_vector) version of the vector. */
     def normalized = xs.map(_.toDouble * (1.0 / xs.magnitude))
 
   /** Represents a position in 2D space */
@@ -116,6 +121,7 @@ package object utils:
   object Experimental:
     /** Simple wrapper case class that holds a result of an evaulation and the the amount of iterations it took to get there. */
     case class Counter[A](value: A, count: Int)
+
     extension [A] (a: A)
       /** Uses a [[scala.collection.immutable.LazyList]] to apply any function `A => A` on any object `n` times. Easily curry-able due to usage of multiple parameter lists. */
       def iterate[B](f: A => A)(n: Int): A = 
@@ -136,6 +142,10 @@ package object utils:
         else a finalizeCount (f, count + 1)
 
     object IterableExtensions:
+      // Doesn't really work how I want it to;
+      // It still returns a list of the same subtype as called 
+      // on, but the super type gets abstracted up to Iterable,
+      // which isn't really optimal.
       extension [A] (xs: collection.Iterable[A])
         def exists(f: (A, Int) => Boolean) = xs.zipWithIndex.exists(f.tupled)
         def forall(f: (A, Int) => Boolean) = xs.zipWithIndex.forall(f.tupled)

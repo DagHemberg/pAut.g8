@@ -107,7 +107,7 @@ abstract class Problem[A]
           .collect { case _ :: `year` :: `day` :: `part` :: _ :: _ :: status :: Nil => status }
         found.headOption match
           case Some("submitted") => 
-            "This solution has already been submitted and verified to be correct!".log()
+            info("This solution has already been submitted and verified to be correct!")
           case Some("not submitted") => 
             val m = current.map(s => if s contains s"$year;$day;$part" then res else s).toSeq
             os.write.over(file, m.mkString("", "\n", "\n"))

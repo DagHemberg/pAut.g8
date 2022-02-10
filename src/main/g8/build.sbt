@@ -12,7 +12,7 @@ lazy val root = project
   .enablePlugins(SiteScaladocPlugin, GhpagesPlugin)
   .settings(
     SiteScaladoc / siteSubdirName := "api/latest",
-    git.remoteRepo := "git@github.com:DagHemberg/AdventAutomation.git",
+    git.remoteRepo := "git@github.com:DagHemberg/AdventAutomation.g8.git",
     name := projectName,
     version := "0.1",
     scalaVersion := scala3Version,

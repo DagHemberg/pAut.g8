@@ -42,15 +42,20 @@ case class Matrix[A](input: Vector[Vector[A]]):
     if input.size == 1 then input.head.mkString("( ", " ", " )")
     else  
       def pad(vec: Vector[A]) = vec
-        .zipWith
-          (input.transpose.map(_.map(_.toString.size).max + 1))
-          ((a, b) => a.toString.reverse.padTo(b, ' ').reverse)
+        .zip(input.transpose.map(_.map(_.toString.size).max + 1))
+        .map((a, b) => a.toString.reverse.padTo(b, ' ').reverse)
         .mkString
       
-      s"\n⎛${pad(input.head)} ⎞${if input.size == 2 then "" else s"\n${input.init.tail.map(row => s"⎜${pad(row)} ⎟").mkString("\n")}"}\n⎝${pad(input.last)} ⎠"
+      s"\n⎛${pad(input.head)} ⎞${
+        if input.size == 2 
+        then "" 
+        else s"\n${input.init.tail.map(row => s"⎜${pad(row)} ⎟").mkString("\n")}"
+      }\n⎝${pad(input.last)} ⎠"
 
   def apply(row: Int, col: Int): A = input(row)(col)
   def apply(index: Index): A = input(index.row)(index.col)
+
+  def isSquare = height == width
 
   def row(row: Int) = input(row).toVector
   def col(col: Int) = input.map(_(col)).toVector
@@ -64,7 +69,7 @@ case class Matrix[A](input: Vector[Vector[A]]):
     (0 until height).toVector.map(row => (0 until width).toVector.map(col => Index(row, col))).toMatrix
 
   def indexOutsideBounds(row: Int, col: Int): Boolean =
-    row < 0 || row >= height || col < 0 || col >= width
+    0 > row || row >= height || 0 > col || col >= width
   def indexOutsideBounds(index: Index): Boolean = 
     indexOutsideBounds(index.row, index.col)
 
@@ -80,7 +85,7 @@ case class Matrix[A](input: Vector[Vector[A]]):
     slice(index.row, index.col)(width, height)
 
   def filterRow(f: Vector[A] => Boolean) = input.filter(f).toMatrix
-  def filterCol(f: Vector[A] => Boolean) = input.transpose.filter(f).transpose.toMatrix
+  def filterCol(f: Vector[A] => Boolean) = transpose.filterRow(f).transpose
 
   def transpose = input.transpose.toMatrix // ??? since when is this a thing
   def flipCols = input.map(_.reverse).toMatrix
@@ -114,10 +119,13 @@ case class Matrix[A](input: Vector[Vector[A]]):
     require(size == other.size, "Can't zip matrices of different dimensions")
     Matrix(input.zip(other.input).map((row, otherRow) => row.zip(otherRow)))
 
-  def zipWithIndex: Matrix[(A, Index)] = this zip indices
+  def zipWithIndex: Matrix[(A, Index)] = zip(indices)
 
-  def zipWith[B, C](other: Matrix[B])(f: (A, B) => C): Matrix[C] =
-    (this zip other).map(f.tupled)
+  def zipWith[B, C](other: Matrix[B])(f: (A, B) => C): Matrix[C] = (zip(other)).map(f.tupled)
+
+/** Typesafe helper enum for the rotation functions in the [[aoc.utils.Matrix]] object. */
+enum Direction:
+  case X, Y, Z
 
 object Matrix:
   def apply[A](height: Int, width: Int)(f: (Int, Int) => A): Matrix[A] = 
@@ -126,38 +134,42 @@ object Matrix:
   def apply[A](height: Int, width: Int)(f: Index => A): Matrix[A] = 
     Matrix(height, width)((r, c) => f(Index(r, c)))
 
+  /** Creates an [identity matrix](https://en.wikipedia.org/wiki/Identity_matrix) of the given dimension. */
   def identity(size: Int): Matrix[Int] = 
     Matrix(size, size)((row, col) => if row == col then 1 else 0)
 
   def fill[A](height: Int, width: Int)(value: A): Matrix[A] = 
     Matrix(height, width)(_ => value)
 
-  def rotate2D(rad: Double) = 
+  /** Creates a 2x2 [rotation matrix](https://en.wikipedia.org/wiki/Rotation_matrix) for the given angle. */
+  def rotation(rad: Double) = 
     Vector(
       Vector(cos(rad), -sin(rad)), 
       Vector(sin(rad), cos(rad))
     ).toMatrix
 
-  def rotate3DX(rad: Double) = 
-    Vector(
-      Vector(1, 0, 0), 
-      Vector(0, cos(rad), -sin(rad)), 
-      Vector(0, sin(rad), cos(rad))
-    ).toMatrix
-
-  def rotate3DY(rad: Double) = 
-    Vector(
-      Vector(cos(rad), 0, sin(rad)), 
-      Vector(0, 1, 0), 
-      Vector(-sin(rad), 0, cos(rad))
-    ).toMatrix
-
-  def rotate3DZ(rad: Double) = 
-    Vector(
-      Vector(cos(rad), -sin(rad), 0), 
-      Vector(sin(rad), cos(rad), 0), 
-      Vector(0, 0, 1)
-    ).toMatrix
+  /** Creates a 3x3 [rotation matrix](https://en.wikipedia.org/wiki/Rotation_matrix) for the given angle and axis. */
+  def rotation(rad: Double, dir: Direction) = 
+    import Direction.*
+    dir match
+      case X => 
+        Vector(
+          Vector(1, 0, 0), 
+          Vector(0, cos(rad), -sin(rad)), 
+          Vector(0, sin(rad), cos(rad))
+        ).toMatrix
+      case Y =>
+        Vector(
+          Vector(cos(rad), 0, sin(rad)), 
+          Vector(0, 1, 0), 
+          Vector(-sin(rad), 0, cos(rad))
+        ).toMatrix
+      case Z =>
+        Vector(
+          Vector(cos(rad), -sin(rad), 0), 
+          Vector(sin(rad), cos(rad), 0), 
+          Vector(0, 0, 1)
+        ).toMatrix
 
 extension [A](vss: Vector[Vector[A]]) 
   def toMatrix: Matrix[A] = Matrix(vss)
@@ -176,7 +188,8 @@ extension [A: Numeric](mat: Matrix[A])
 
   def *(vec: Vector[A]): Vector[A] = (mat * Vector(vec).transpose.toMatrix).toVector.flatten
 
-  def determinant: A =     
+  /** Computes the [determinant](https://en.wikipedia.org/wiki/Determinant) of the matrix.*/
+  def determinant: A = 
     require(mat.width == mat.height)
     mat.width match
       case 1 => mat(0, 0)
@@ -184,6 +197,12 @@ extension [A: Numeric](mat: Matrix[A])
       case n => (0 until n)
         .map(i => (if i % 2 == 0 then mat.col(i)(0) else -mat.col(i)(0)) * mat.dropCol(i).dropRow(0).determinant)
         .sum
+
+  def trace = 
+    require(mat.width == mat.height)
+    mat.width match
+    case 1 => mat(0, 0)
+    case n => (0 until n).map(i => mat(i, i)).sum
 
 extension [A](mat: Matrix[Matrix[A]])
   def flatten = mat.toVector
