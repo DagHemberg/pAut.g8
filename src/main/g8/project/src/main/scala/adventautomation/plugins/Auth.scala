@@ -28,7 +28,7 @@ object Auth extends AutoPlugin {
         } else {
           inf(s"Attempting to authenticate with AoC servers...")
           val regex = "(?<=<div class=\"user\">)(.*)(?= <span)".r
-          regex.findFirstIn(s"""bash -c "curl --silent -A 'Scala AdventOfCode Helper v0.1' --cookie 'session=$sessionToken' 'https://adventofcode.com'"""".!!) match {
+          regex.findFirstIn(SystemCommand.exec(s"curl --silent -A 'Scala AdventOfCode Helper v0.1' --cookie 'session=$sessionToken' 'https://adventofcode.com'")) match {
             case Some(name) => {
               suc(s"Logged in as: ${YELLOW}$name${RESET}")
               SettingsManager.set("token", sessionToken)

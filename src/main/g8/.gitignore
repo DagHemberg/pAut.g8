@@ -226,5 +226,6 @@ hs_err_pid*
 !.vscode/*.code-snippets
 
 other/
+src/main/resources/settings.txt
 
 # End of https://www.toptal.com/developers/gitignore/api/scala,metals,sbt,visualstudiocode,node
