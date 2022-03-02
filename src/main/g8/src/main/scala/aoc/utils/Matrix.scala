@@ -37,7 +37,7 @@ case class Matrix[A](input: Vector[Vector[A]]):
   lazy val width = input.head.size
   lazy val size = (height, width)
 
-  // doesn't work super well with other multi-line toStrings 
+  // doesn't work super well (read: at all) with other multi-line toStrings 
   override def toString = 
     if input.size == 1 then input.head.mkString("( ", " ", " )")
     else  
@@ -47,8 +47,7 @@ case class Matrix[A](input: Vector[Vector[A]]):
         .mkString
       
       s"\n⎛${pad(input.head)} ⎞${
-        if input.size == 2 
-        then "" 
+        if input.size == 2 then "" 
         else s"\n${input.init.tail.map(row => s"⎜${pad(row)} ⎟").mkString("\n")}"
       }\n⎝${pad(input.last)} ⎠"
 
