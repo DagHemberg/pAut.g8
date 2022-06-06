@@ -17,7 +17,7 @@ package object utils:
       a
 
     /** Logs any object `a` in the console without the "[*]" prefix and then returns the object without modifying it. */
-    def debugClean = 
+    def dbg = 
       println(a)
       a
     
@@ -50,6 +50,7 @@ package object utils:
       val half = xs.size / 2
       if xs.size % 2 == 0 then (sorted(half) + sorted(half - 1)).toDouble / 2
       else sorted(half).toDouble
+    def rms = math.sqrt(xs.map(x => x * x).sum.toDouble / xs.size)
 
   extension [A: Numeric](xs: Vector[A])
     def toPos3D = 
@@ -85,7 +86,7 @@ package object utils:
     def +(p: Pos) = Pos(x + p.x, y + p.y)
     def -(p: Pos) = Pos(x - p.x, y - p.y)
 
-    def distance(p: Pos) = math.sqrt((x - p.x) * (x - p.x) + (y - p.y) * (y - p.y))
+    def distance(p: Pos) = math.sqrt(math.pow((x - p.x), 2) + math.pow((y - p.y), 2))
     def manhattan(p: Pos) = math.abs(x - p.x) + math.abs(y - p.y)
     
   /** Represents a position in 3D space */
@@ -96,15 +97,17 @@ package object utils:
     def +(p: Pos3D) = Pos3D(x + p.x, y + p.y, z + p.z)
     def -(p: Pos3D) = Pos3D(x - p.x, y - p.y, z - p.z)
     
+    private def diff(p: Pos3D) = toVector.zipWith(p.toVector)(_ - _)
+
     def distance(p: Pos3D) = 
-      math.sqrt((x - p.x).toDouble * (x - p.x) + (y - p.y).toDouble * (y - p.y) + (z - p.z).toDouble * (z - p.z))
+      diff(p).toVector.magnitude
     def manhattan(p: Pos3D) = 
-      math.abs(x - p.x) + math.abs(y - p.y) + math.abs(z - p.z)
+      diff(p).map(math.abs).sum
 
   case class Line(start: Pos, end: Pos)
   case class Line3D(start: Pos3D, end: Pos3D)
 
-  /** A simple wrapper class that includes the result of an evaluation and the time it took to execute it
+  /** A simple wrapper class that includes the result of an evaluation and the time (in seconds) it took to evaluate it
    * @param result The final evaluation
    * @param time Time elapsed while evaluating, in seconds
    */
@@ -124,22 +127,26 @@ package object utils:
 
     extension [A] (a: A)
       /** Uses a [[scala.collection.immutable.LazyList]] to apply any function `A => A` on any object `n` times. Easily curry-able due to usage of multiple parameter lists. */
-      def iterate[B](f: A => A)(n: Int): A = 
+      def iterate(f: A => A)(n: Int): A = 
         LazyList.iterate(a)(f)(n)
-      
-      /** Recursively applies a function `f: A => A` on any object `a` until `f(a)` is equal to `a`.
+
+      /** Recursively applies a function `f: A => A` on any object `a` until the predicate `p` is satisfied.
        */
-      def finalize[B](f: A => A): A =
-        if a == f(a) then a
-        else a finalize f
+      def until(p: A => Boolean, f: A => A): A = 
+        if p(a) then a 
+        else f(a) until (p, f)
+      
+      /** Recursively applies a function `f: A => A` on any object `a` until `f(a)` is equal to `a`. Shorthand for `until(_ == f(a))(f)`.
+       */
+      def converge(f: A => A): A = a until (_ == f(a), f)  
 
       /** Recursively applies a function `f: A => A` on any object `a` until `f(a)` is equal to `a`.
         * @return the result of the repeated function on `a`.
         * @return the number of times the function was applied.
       */
-      def finalizeCount[B](f: A => A, count: Int = 0): Counter[A] =
+      def convergeCount(f: A => A, count: Int = 0): Counter[A] =
         if a == f(a) then Counter(a, count)
-        else a finalizeCount (f, count + 1)
+        else a convergeCount (f, count + 1)
 
     object IterableExtensions:
       // Doesn't really work how I want it to;

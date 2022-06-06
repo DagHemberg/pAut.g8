@@ -30,14 +30,12 @@ abstract class Problem[A]
 
   private def tinyStack(e: Throwable) =
     s"""|[${RED}!${RESET}] ${e.getClass.getSimpleName}: ${e.getMessage}
-        |${e.getStackTrace
+        |${e.getStackTrace.toVector
             .dropWhile(!_.toString.startsWith("aoc"))
             .takeWhile(!_.toString.startsWith("aoc.utils.Problem"))
-            .dropRight(1)
-            .toVector
+            .init
             .map(s => s"      $s")
             .mkString("\n")}""".stripMargin
-
 
   private val wd = os.pwd / "src" / "main"
 
@@ -102,17 +100,18 @@ abstract class Problem[A]
         val res = s"$date;$year;$day;$part;${f"${eval.duration}%2.6f"}s;${eval.result};not submitted"
         val file = wd / "resources" / "results.csv"
         val current = os.read.lines(file)
-        val found = current.tail
+        current
+          .tail
           .map(_.split(";").toList)
           .collect { case _ :: `year` :: `day` :: `part` :: _ :: _ :: status :: Nil => status }
-        found.headOption match
-          case Some("submitted") => 
-            info("This solution has already been submitted and verified to be correct!")
-          case Some("not submitted") => 
-            val m = current.map(s => if s contains s"$year;$day;$part" then res else s).toSeq
-            os.write.over(file, m.mkString("", "\n", "\n"))
-          case None | Some(_) => os.write.append(file, s"$res\n")
+          .headOption match
+            case Some("submitted") => 
+              info("This solution has already been submitted and verified to be correct!")
+            case Some("not submitted") => 
+              val m = current.map(s => if s contains s"$year;$day;$part" then res else s).toSeq
+              os.write.over(file, m.mkString("", "\n", "\n"))
+            case None | Some(_) => os.write.append(file, s"$res\n")
 
     result
 
-  if exampleInput.isDefined && puzzleInput.isDefined then execute
+  val result = if exampleInput.isDefined && puzzleInput.isDefined then execute else None
