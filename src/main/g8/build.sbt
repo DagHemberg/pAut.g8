@@ -2,7 +2,7 @@ import adventautomation.plugins._
 import adventautomation.utils.SettingsManager
 import adventautomation.commands.Year._
 
-val scala3Version = "3.1.0"
+val scala3Version = "3.1.2"
 
 lazy val projectName = s"aoc-${SettingsManager.get("year").getOrElse("N/A")}"
 
