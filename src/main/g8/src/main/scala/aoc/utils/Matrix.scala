@@ -18,9 +18,12 @@ case class Index(row: Int, col: Int):
   lazy val neighboursOrth = List(up, left, right, down)
   lazy val neighboursDiag = List(nw, ne, sw, se)
 
-  def neighborsIn[A](using mat: Matrix[A]) = neighbors.filterNot(mat.indexOutsideBounds).map(mat.apply)
-  def neighborsOrthIn[A](using mat: Matrix[A]) = neighboursOrth.filterNot(mat.indexOutsideBounds).map(mat.apply)  
-  def neighboursDiagIn[A](using mat: Matrix[A]) = neighboursDiag.filterNot(mat.indexOutsideBounds).map(mat.apply)
+  private def outsideFilter[A](list: List[Index])(using mat: Matrix[A]) = 
+    neighbors filterNot mat.indexOutsideBounds map mat.apply
+
+  def neighborsIn[A](using mat: Matrix[A]) = outsideFilter(neighbors)
+  def neighborsOrthIn[A](using mat: Matrix[A]) = outsideFilter(neighboursOrth)
+  def neighboursDiagIn[A](using mat: Matrix[A]) = outsideFilter(neighboursDiag)
 
 /** A generic Matrix class. Useful for working with 2D structures.
  * @tparam A The type of elements in the matrix. When `A` is a [[scala.Numeric]] type, a number of extension methods are made available which allow for basic mathematical matrix operations.
@@ -95,19 +98,19 @@ case class Matrix[A](input: Vector[Vector[A]]):
   def swapCols(a: Int, b: Int) =
     transpose.swapRows(a, b).transpose
 
-  def appendedLeft(other: Matrix[A]): Matrix[A] = 
+  def appendLeft(other: Matrix[A]) = 
     require(other.height == height, "Can't append matrices of different heights to the side")
     Matrix(input.zip(other.input).map((row, otherRow) => otherRow ++ row))
 
-  def appendedRight(other: Matrix[A]): Matrix[A] =
+  def appendRight(other: Matrix[A]) =
     require(other.height == height, "Can't append matrices of different heights to the side")
     Matrix(input.zip(other.input).map((row, otherRow) => row ++ otherRow))
 
-  def appendedTop(other: Matrix[A]): Matrix[A] =
+  def appendTop(other: Matrix[A]) =
     require(other.width == width, "Can't append matrices of different widths to the top")
     Matrix(other.input ++ input)
 
-  def appendedBottom(other: Matrix[A]): Matrix[A] =
+  def appendBottom(other: Matrix[A]) =
     require(other.width == width, "Can't append matrices of different widths to the bottom")
     Matrix(input ++ other.input)
 
@@ -120,13 +123,16 @@ case class Matrix[A](input: Vector[Vector[A]]):
 
   def zipWithIndex: Matrix[(A, Index)] = zip(indices)
 
-  def zipWith[B, C](other: Matrix[B])(f: (A, B) => C): Matrix[C] = (zip(other)).map(f.tupled)
+  def zipWith[B, C](other: Matrix[B])(f: (A, B) => C): Matrix[C] = zip(other) map f.tupled
 
-/** Typesafe helper enum for the rotation functions in the [[aoc.utils.Matrix]] object. */
-enum Direction:
-  case X, Y, Z
+  def updated(row: Int, col: Int)(value: A): Matrix[A] = 
+    input.updated(row, input(row).updated(col, value)).toMatrix
 
 object Matrix:
+  /** Typesafe helper enum for the rotation functions in the [[aoc.utils.Matrix]] object. */
+  enum Axis:
+    case X, Y, Z
+
   def apply[A](height: Int, width: Int)(f: (Int, Int) => A): Matrix[A] = 
     Matrix((0 until height).toVector.map(row => (0 until width).toVector.map(col => f(row, col))))
   
@@ -148,8 +154,8 @@ object Matrix:
     ).toMatrix
 
   /** Creates a 3x3 [rotation matrix](https://en.wikipedia.org/wiki/Rotation_matrix) for the given angle and axis. */
-  def rotation(rad: Double, dir: Direction) = 
-    import Direction.*
+  def rotation(rad: Double, dir: Axis) = 
+    import Axis.*
     dir match
       case X => 
         Vector(
@@ -179,8 +185,8 @@ extension [A: Numeric](xs: Vector[A])
 extension [A: Numeric](mat: Matrix[A])
   def sum = mat.toVector.flatten.sum
   def product = mat.toVector.flatten.product
-  def +(other: Matrix[A]) = mat zip other map ((a, b) => a + b)
-  def -(other: Matrix[A]) = mat zip other map ((a, b) => a - b)
+  def +(other: Matrix[A]) = mat zip other map (_ + _)
+  def -(other: Matrix[A]) = mat zip other map (_ - _)
   def *(other: Matrix[A]): Matrix[A] = 
     require(mat.width == other.height)
     Matrix(mat.height, other.width)((r, c) => mat.row(r) dot other.col(c))
@@ -189,21 +195,22 @@ extension [A: Numeric](mat: Matrix[A])
 
   /** Computes the [determinant](https://en.wikipedia.org/wiki/Determinant) of the matrix.*/
   def determinant: A = 
-    require(mat.width == mat.height)
+    require(mat.isSquare, "Can't compute the determinant of a non-square matrix")
     mat.width match
       case 1 => mat(0, 0)
       case 2 => (mat.row(0)(0) * mat.row(1)(1) - mat.row(0)(1) * mat.row(1)(0))
       case n => (0 until n)
-        .map(i => (if i % 2 == 0 then mat.col(i)(0) else -mat.col(i)(0)) * mat.dropCol(i).dropRow(0).determinant)
+        .map(i => (if i % 2 == 0 then mat.col(i)(0) else -mat.col(i)(0)) * (mat dropCol i dropRow 0).determinant)
         .sum
 
-  def trace = 
-    require(mat.width == mat.height)
-    mat.width match
-    case 1 => mat(0, 0)
-    case n => (0 until n).map(i => mat(i, i)).sum
+  def trace: A = 
+    require(mat.isSquare, "Can't compute the trace of a non-square matrix")
+    (0 until mat.width).map(i => mat(i, i)).sum
+
+  def determinantOption: Option[A] = if mat.isSquare then Some(determinant) else None
+  def traceOption: Option[A] = if mat.isSquare then Some(trace) else None
 
 extension [A](mat: Matrix[Matrix[A]])
   def flatten = mat.toVector
-    .map(_.reduce((acc, curr) => acc.appendedRight(curr)))
-    .reduce((acc, curr) => acc.appendedBottom(curr))
+    .map(_.reduce(_ appendRight _))
+    .reduce(_ appendBottom _)
