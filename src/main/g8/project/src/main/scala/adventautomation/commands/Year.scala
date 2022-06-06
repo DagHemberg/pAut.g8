@@ -9,8 +9,9 @@ import scala.util.{Try, Success, Failure}
 import adventautomation.utils._
 import Logging._
 
-// Q: is this the right way to write custom commands?
-// A: absolutley not but im doing it anyway
+// is this the right way to write custom commands?
+// absolutley not 
+// but im doing it anyway
 object Year {
   def year = Command.args("year", "<year>") { (state, args) =>
     val foundYear = SettingsManager.get("year").get
