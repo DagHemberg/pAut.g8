@@ -89,7 +89,7 @@ case class Matrix[A](input: Vector[Vector[A]]):
   def filterRow(f: Vector[A] => Boolean) = input.filter(f).toMatrix
   def filterCol(f: Vector[A] => Boolean) = transpose.filterRow(f).transpose
 
-  def transpose = input.transpose.toMatrix // ??? since when is this a thing
+  def transpose = input.transpose.toMatrix
   def flipCols = input.map(_.reverse).toMatrix
   def flipRows = input.reverse.toMatrix
 

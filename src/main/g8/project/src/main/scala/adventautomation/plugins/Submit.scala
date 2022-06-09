@@ -106,7 +106,8 @@ object Submit extends AutoPlugin {
 
       def getAnswer(day: Int, part: String, year: String): Either[String, String] = {
         val current = Source
-          .fromFile("./src/main/resources/results.csv").getLines()
+          .fromFile("./src/main/resources/results.csv")
+          .getLines()
           .toVector
         
         val d = f"$day%02d"
