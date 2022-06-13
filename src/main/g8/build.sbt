@@ -8,7 +8,7 @@ lazy val projectName = s"aoc-${SettingsManager.get("year").getOrElse("N/A")}"
 
 lazy val root = project
   .in(file("."))
-  .enablePlugins(Auth, Fetch, Init, Submit)
+  .enablePlugins(Auth, Fetch, Init, Submit, Stats)
   .enablePlugins(SiteScaladocPlugin, GhpagesPlugin)
   .settings(
     SiteScaladoc / siteSubdirName := "api/latest",

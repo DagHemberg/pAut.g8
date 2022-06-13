@@ -54,7 +54,7 @@ object Submit extends AutoPlugin {
                     current.map(line => 
                       if (line contains s"$year;${f"$day%02d"};$part") line.replace("not submitted", "submitted") 
                       else line
-                    ).mkString("\n")
+                    ).mkString("", "\n", "\n")
                   )
                   suc(s"${YELLOW}Correct${RESET} answer!") 
                   suc(s"Head to ${
