@@ -2,29 +2,6 @@ package aoc.utils
 import math.Numeric.Implicits.infixNumericOps
 import math.*
 
-/** A helper class for [[aoc.utils.Matrix]] used for indexing. */
-case class Index(row: Int, col: Int):
-  override def toString: String = s"($row, $col)"
-  lazy val up = Index(row - 1, col)
-  lazy val down = Index(row + 1, col)
-  lazy val left = Index(row, col - 1)
-  lazy val right = Index(row, col + 1)
-  lazy val nw = Index(row - 1, col - 1)
-  lazy val ne = Index(row - 1, col + 1)
-  lazy val sw = Index(row + 1, col - 1)
-  lazy val se = Index(row + 1, col + 1)
-
-  lazy val neighbors = List(up, down, left, right, nw, ne, sw, se)
-  lazy val neighboursOrth = List(up, left, right, down)
-  lazy val neighboursDiag = List(nw, ne, sw, se)
-
-  private def outsideFilter[A](list: List[Index])(using mat: Matrix[A]) = 
-    neighbors filterNot mat.indexOutsideBounds map mat.apply
-
-  def neighborsIn[A](using mat: Matrix[A]) = outsideFilter(neighbors)
-  def neighborsOrthIn[A](using mat: Matrix[A]) = outsideFilter(neighboursOrth)
-  def neighboursDiagIn[A](using mat: Matrix[A]) = outsideFilter(neighboursDiag)
-
 /** A generic Matrix class. Useful for working with 2D structures.
  * @tparam A The type of elements in the matrix. When `A` is a [[scala.Numeric]] type, a number of extension methods are made available which allow for basic mathematical matrix operations.
  * @param rows The number of rows in the matrix.
@@ -55,7 +32,6 @@ case class Matrix[A](input: Vector[Vector[A]]):
       }\n⎝${pad(input.last)} ⎠"
 
   def apply(row: Int, col: Int): A = input(row)(col)
-  def apply(index: Index): A = input(index.row)(index.col)
 
   def isSquare = height == width
 
@@ -67,13 +43,11 @@ case class Matrix[A](input: Vector[Vector[A]]):
   def rows = toVector
   def cols = toVector.transpose
 
-  def indices: Matrix[Index] = 
-    (0 until height).toVector.map(row => (0 until width).toVector.map(col => Index(row, col))).toMatrix
+  def indices = 
+    (0 until height).toVector.map(row => (0 until width).toVector.map(col => (row, col))).toMatrix
 
   def indexOutsideBounds(row: Int, col: Int): Boolean =
     0 > row || row >= height || 0 > col || col >= width
-  def indexOutsideBounds(index: Index): Boolean = 
-    indexOutsideBounds(index.row, index.col)
 
   def map[B](f: A => B) = input.map(_.map(f)).toMatrix
   def forEach(f: A => Unit) = input.foreach(_.foreach(f))
@@ -83,8 +57,6 @@ case class Matrix[A](input: Vector[Vector[A]]):
 
   def slice(row: Int, col: Int)(width: Int, height: Int): Matrix[A] = 
     input.slice(row, row + width).map(_.slice(col, col + height)).toMatrix
-  def slice(index: Index)(width: Int, height: Int): Matrix[A] = 
-    slice(index.row, index.col)(width, height)
 
   def filterRow(f: Vector[A] => Boolean) = input.filter(f).toMatrix
   def filterCol(f: Vector[A] => Boolean) = transpose.filterRow(f).transpose
@@ -121,7 +93,7 @@ case class Matrix[A](input: Vector[Vector[A]]):
     require(size == other.size, "Can't zip matrices of different dimensions")
     Matrix(input.zip(other.input).map((row, otherRow) => row.zip(otherRow)))
 
-  def zipWithIndex: Matrix[(A, Index)] = zip(indices)
+  def zipWithIndex: Matrix[(A, (Int, Int))] = zip(indices)
 
   def zipWith[B, C](other: Matrix[B])(f: (A, B) => C): Matrix[C] = zip(other) map f.tupled
 
@@ -135,16 +107,13 @@ object Matrix:
 
   def apply[A](height: Int, width: Int)(f: (Int, Int) => A): Matrix[A] = 
     Matrix((0 until height).toVector.map(row => (0 until width).toVector.map(col => f(row, col))))
-  
-  def apply[A](height: Int, width: Int)(f: Index => A): Matrix[A] = 
-    Matrix(height, width)((r, c) => f(Index(r, c)))
 
   /** Creates an [identity matrix](https://en.wikipedia.org/wiki/Identity_matrix) of the given dimension. */
   def identity(size: Int): Matrix[Int] = 
     Matrix(size, size)((row, col) => if row == col then 1 else 0)
 
   def fill[A](height: Int, width: Int)(value: A): Matrix[A] = 
-    Matrix(height, width)(_ => value)
+    Matrix(height, width)((a, b) => value)
 
   /** Creates a 2x2 [rotation matrix](https://en.wikipedia.org/wiki/Rotation_matrix) for the given angle. */
   def rotation(rad: Double) = 
