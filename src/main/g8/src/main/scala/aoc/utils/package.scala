@@ -7,26 +7,32 @@ import Console.*
 package object utils:
   extension [A](a: A)
     /** Logs any object `a` in the console and then returns the object without modifying it. */
-    def debug = 
+    def log = 
       println(s"[${YELLOW}*${RESET}] $a")
       a
 
     /** Logs any attribute of object `a` in the console and then returns the object without modifying it. */
-    def debugAttr[B](f: A => B) = 
+    def logAttr[B](f: A => B) = 
       println(s"[${YELLOW}*${RESET}] ${f(a)}")
       a
 
     /** Logs any object `a` in the console without the "[*]" prefix and then returns the object without modifying it. */
-    def dbg = 
+    def lg = 
       println(a)
       a
     
+    /** Prints an empty line in the console and returns the object without modifying it. Useful for debugging. */
+    def space = 
+      println()
+      a
+
     /** Logs any object `a` in the console *if* the condition `p` is satisfied and then returns the object without modifying it. */
     def warn(p: A => Boolean) = 
       if p(a) then println(s"[${RED}!${RESET}] $a")
       a
 
-    def log(color: String = "cyan") =
+    /** Similar to `log`, but takes a color parameter. */
+    def logCol(color: String = "yellow") =
       val col = color.toLowerCase match
         case "cyan" => CYAN
         case "red" => RED
@@ -37,7 +43,21 @@ package object utils:
         case _ => CYAN
       println(s"[${col}+${RESET}] $a")
       a
-    
+
+    /** Uses a [[scala.collection.immutable.LazyList]] to apply any function `A => A` on any object `n` times. Easily curry-able due to usage of multiple parameter lists. */
+    def iterate(f: A => A)(n: Int): A = 
+      LazyList.iterate(a)(f)(n)
+
+    /** Recursively applies a function `f: A => A` on any object `a` until the predicate `p` is satisfied.
+     */
+    def doUntil(p: A => Boolean)(f: A => A): A = 
+      if p(a) then a
+      else f(a).doUntil(p)(f)
+
+    /** Recursively applies a function `f: A => A` on any object `a` until `f(a)` is equal to `a`. Shorthand for `doUntil(_ == f(a))(f)`.
+     */
+    def converge(f: A => A): A = a.doUntil(_ == f(a))(f)
+
   extension [A](xs: IndexedSeq[A])
     /** Zips two sequences and applies a function on the resulting tuples. Functionally equivalent to `.zip(...).map(...)`. */
     def zipWith[B, C](ys: IndexedSeq[B])(f: (A, B) => C) =
@@ -76,6 +96,32 @@ package object utils:
 
     /** Returns a [normalized](https://en.wikipedia.org/wiki/Unit_vector) version of the vector. */
     def normalized = xs.map(_.toDouble * (1.0 / xs.magnitude))
+
+  extension (tup: (Int, Int))
+    def transpose = (tup._2, tup._1)
+    
+    def row = tup._1
+    def col = tup._2
+        
+    def up = (tup.row - 1, tup.col)
+    def down = (tup.row + 1, tup.col)
+    def left = (tup.row, tup.col - 1)
+    def right = (tup.row, tup.col + 1)
+    def ul = (tup.row - 1, tup.col - 1)
+    def ur = (tup.row - 1, tup.col + 1)
+    def dl = (tup.row + 1, tup.col - 1)
+    def dr = (tup.row + 1, tup.col + 1)
+
+    def neighbors: List[(Int, Int)] = List(tup.up, tup.down, tup.left, tup.right, tup.ul, tup.ur, tup.dl, tup.dr)
+    def neighboursOrth = List(tup.up, tup.left, tup.right, tup.down)
+    def neighboursDiag = List(tup.ul, tup.ur, tup.dl, tup.dr)
+
+    private def outsideFilter[A](list: List[(Int, Int)])(using mat: Matrix[A]) = 
+      tup.neighbors filterNot mat.indexOutsideBounds map mat.apply
+
+    def neighborsIn[A](using mat: Matrix[A]) = tup.outsideFilter(tup.neighbors)
+    def neighborsOrthIn[A](using mat: Matrix[A]) = tup.outsideFilter(tup.neighboursOrth)
+    def neighboursDiagIn[A](using mat: Matrix[A]) = tup.outsideFilter(tup.neighboursDiag)
 
   /** Represents a position in 2D space */
   case class Pos(x: Int, y: Int):
@@ -119,46 +165,3 @@ package object utils:
       val result = block
       val duration = (System.nanoTime() - start) / 1E9
       TimedEval(duration, result)
-
-  /** Experimental features. Not fully tested. */
-  object Experimental:
-    /** Simple wrapper case class that holds a result of an evaulation and the the amount of iterations it took to get there. */
-    case class Counter[A](value: A, count: Int)
-
-    extension [A] (a: A)
-      /** Uses a [[scala.collection.immutable.LazyList]] to apply any function `A => A` on any object `n` times. Easily curry-able due to usage of multiple parameter lists. */
-      def iterate(f: A => A)(n: Int): A = 
-        LazyList.iterate(a)(f)(n)
-
-      /** Recursively applies a function `f: A => A` on any object `a` until the predicate `p` is satisfied.
-       */
-      def until(p: A => Boolean, f: A => A): A = 
-        if p(a) then a 
-        else f(a) until (p, f)
-      
-      /** Recursively applies a function `f: A => A` on any object `a` until `f(a)` is equal to `a`. Shorthand for `until(_ == f(a))(f)`.
-       */
-      def converge(f: A => A): A = a until (_ == f(a), f)  
-
-      /** Recursively applies a function `f: A => A` on any object `a` until `f(a)` is equal to `a`.
-        * @return the result of the repeated function on `a`.
-        * @return the number of times the function was applied.
-      */
-      def convergeCount(f: A => A, count: Int = 0): Counter[A] =
-        if a == f(a) then Counter(a, count)
-        else a convergeCount (f, count + 1)
-
-    object IterableExtensions:
-      // Doesn't really work how I want it to;
-      // It still returns a list of the same subtype as called 
-      // on, but the super type gets abstracted up to Iterable,
-      // which isn't really optimal.
-      extension [A] (xs: collection.Iterable[A])
-        def exists(f: (A, Int) => Boolean) = xs.zipWithIndex.exists(f.tupled)
-        def forall(f: (A, Int) => Boolean) = xs.zipWithIndex.forall(f.tupled)
-        def foreach(f: (A, Int) => Unit) = xs.zipWithIndex.foreach(f.tupled)
-        def find(f: (A, Int) => Boolean) = xs.zipWithIndex.find(f.tupled).map(_._1)
-        def findIndex(f: (A, Int) => Boolean) = xs.zipWithIndex.find(f.tupled).map(_._2)
-        def map[B](f: (A, Int) => B) = xs.zipWithIndex.map(f.tupled)
-        def filter(f: (A, Int) => Boolean) = xs.zipWithIndex.filter(f.tupled).map(_._1)
-        def filterNot(f: (A, Int) => Boolean) = xs.zipWithIndex.filterNot(f.tupled).map(_._1)
