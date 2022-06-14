@@ -15,7 +15,7 @@ object Stats extends AutoPlugin {
 
   override lazy val projectSettings: Seq[Setting[_]] = Seq(
     stats := {
-      val args = spaceDelimited("toggleSubmitted <line>").parsed.toList
+      val args = spaceDelimited("toggle <line>").parsed.toList
       val path = "./src/main/resources/results.csv"
       val lines = Source
         .fromFile(path)
