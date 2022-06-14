@@ -97,6 +97,9 @@ package object utils:
     /** Returns a [normalized](https://en.wikipedia.org/wiki/Unit_vector) version of the vector. */
     def normalized = xs.map(_.toDouble * (1.0 / xs.magnitude))
 
+  extension (str: String)
+    def words = str.split("\\s+").toList
+
   extension (tup: (Int, Int))
     def transpose = (tup._2, tup._1)
     
