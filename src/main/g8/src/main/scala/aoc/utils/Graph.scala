@@ -9,22 +9,21 @@ trait Graph[V]:
   import Graph.*
   protected given adjacenctTo: (V => Set[Edge[V]])
 
-  def apply(v: V) = adjacenctTo(v)
-  def apply(a: V)(b: V) = adjacenctTo(a).find(_.to == b).map(_.weight)
-
   def vertices: Set[V]
   def edges: Set[Edge[V]]
   def edgesFrom: Map[V, Set[Edge[V]]]
   def edgesTo: Map[V, Set[Edge[V]]]
 
+  def filterEdges(p: Edge[V] => Boolean): Graph[V]
+  def filterVertices(p: V => Boolean): Graph[V]
+
+  def apply(v: V) = adjacenctTo(v)
+  def apply(a: V, b: V) = adjacenctTo(a).find(_.to == b).map(_.weight)
+
   def pathsFrom(start: V) = dijkstra(start)
   def pathBetween(start: V, end: V, heuristic: V => Double = _ => 0) = aStar(start, end, heuristic)
 
-  def reachableFrom(start: V) =     
-    adjacenctTo(start)
-      .map(_.to)
-      .converge(s => s ++ s.flatMap(adjacenctTo).map(_.to)) 
-      + start
+  def reachableFrom(start: V) = pathsFrom(start).map(_.last)
 
 object Graph:
   def apply[V](adjacencyFunction: V => Set[Edge[V]]) = LazyGraph(adjacencyFunction)
@@ -38,8 +37,8 @@ object Graph:
   private def fastBfs[V]
     (start: V, stoppingPredicate: V => Boolean, heuristic: V => Double)
     (using adj: V => Set[Edge[V]]) = 
-    
-    val pq = mutable.PriorityQueue(start -> 0d)(Ordering.by((a, b) => -b))
+
+    val pq = mutable.PriorityQueue(start -> 0d)(Ordering.by(_._2)).reverse
     val prev = mutable.Map.empty[V, V]
     val dist = mutable.Map(start -> 0d) withDefaultValue Double.PositiveInfinity
 
@@ -60,10 +59,13 @@ object Graph:
 
   def dijkstra[V](start: V)(using V => Set[Edge[V]]): Set[Path[V]] = 
     val (dist, prev, _) = fastBfs(start, _ => false, _ => 0)
+    
+    // todo clean up
     (dist.keySet - start).map(v => Path(backtrack(v)(using prev, start), dist(v))) + Path(Seq(start), 0)
 
   def aStar[V](start: V, end: V, heuristic: V => Double)(using V => Set[Edge[V]]) = 
     val (dist, prev, found) = fastBfs(start, _ == end, heuristic)
+    
     if found then Some(Path(backtrack(end)(using prev, start), dist(end)))
     else None
 
@@ -83,11 +85,20 @@ case class LazyGraph[V](adjacencyFunction: V => Set[Edge[V]]) extends Graph[V]:
   def edgesTo = mEdgesTo.toMap
 
   protected final given adjacenctTo: (V => Set[Edge[V]]) = v => 
-    val edgs = mEdgesFrom.getOrElseUpdate(v, adjacencyFunction(v))
-    mEdgesTo ++= edgs.groupBy(_.to)
-    mVertices ++= edgs.flatMap(e => Set(e.u, e.v))
-    mEdges ++= edgs
-    edgs
+    if mEdgesFrom isDefinedAt v then mEdgesFrom(v)
+    else
+      val edgs = adjacencyFunction(v)
+      mEdges ++= edgs
+      mEdgesFrom += v -> edgs
+      mEdgesTo ++= edgs.groupBy(_.to)
+      mVertices ++= edgs.flatMap(e => Set(e.u, e.v))
+      edgs
+
+  def filterEdges(p: Edge[V] => Boolean) = 
+    LazyGraph(v => adjacencyFunction(v).filter(p))
+
+  def filterVertices(p: V => Boolean) = 
+    LazyGraph(v => adjacencyFunction(v).filter(e => p(e.v) && p(e.u)))
 
 case class FiniteGraph[V](private val elems: Set[Edge[V]]) extends Graph[V]:
   override def toString = s"Graph(${elems.mkString(", ")})"
@@ -96,6 +107,9 @@ case class FiniteGraph[V](private val elems: Set[Edge[V]]) extends Graph[V]:
   lazy val edgesFrom = edges.groupBy(_.from) withDefaultValue Set.empty
   lazy val edgesTo = edges.groupBy(_.to) withDefaultValue Set.empty
 
-  protected final given adjacenctTo: (V => Set[Edge[V]]) = edgesFrom.apply  
+  protected final given adjacenctTo: (V => Set[Edge[V]]) = edgesFrom.apply
+
+  def filterEdges(p: Edge[V] => Boolean) = FiniteGraph(elems.filter(p))
+  def filterVertices(p: V => Boolean) = FiniteGraph(elems.filter(e => p(e.u) && p(e.v)))
 
   def transpose = Graph(edges.map(_.reverse))

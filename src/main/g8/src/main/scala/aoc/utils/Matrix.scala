@@ -158,8 +158,8 @@ object Matrix:
           Vector(0, 0, 1)
         ).toMatrix
 
-extension [A](vss: IndexedSeq[IndexedSeq[A]]) 
-  def toMatrix: Matrix[A] = Matrix(vss.map(_.toVector).toVector)
+extension [A](vss: Vector[Vector[A]])
+  def toMatrix = Matrix(vss)
 
 extension [A: Numeric](xs: Vector[A])
   def *(mat: Matrix[A]): Vector[A] = (Vector(xs).transpose.toMatrix * mat).toVector.flatten

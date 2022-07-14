@@ -2,7 +2,7 @@ import adventautomation.plugins._
 import adventautomation.utils.SettingsManager
 import adventautomation.commands.Year._
 
-val scala3Version = "3.1.2"
+val scala3Version = "3.1.3"
 
 lazy val projectName = s"aoc-${SettingsManager.get("year").getOrElse("N/A")}"
 
@@ -14,7 +14,7 @@ lazy val root = project
     SiteScaladoc / siteSubdirName := "api/latest",
     git.remoteRepo := "git@github.com:DagHemberg/AdventAutomation.g8.git",
     name := projectName,
-    version := "0.2",
+    version := "0.3",
     scalaVersion := scala3Version,
     commands ++= Seq(year),
     libraryDependencies ++= Seq(

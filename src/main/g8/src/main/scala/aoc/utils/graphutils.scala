@@ -2,7 +2,7 @@ package aoc.utils
 import collection.mutable as mutable
 
 // not sure if i really need this?
-// could be nice to have but might move to package object
+// could be nice to have eventually but might move to utils package object
 case class Tree[V](value: V, children: Set[Tree[V]] = Set.empty[Tree[V]]):
   override def toString = 
     if children.isEmpty then value.toString

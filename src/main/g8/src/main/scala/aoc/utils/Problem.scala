@@ -11,13 +11,14 @@ import TimedEval.*
   */
 abstract class Problem[A]
   (val year: String, val day: String, val part: String)
-  (val expectedExampleSolution: A) extends App:
+  (val expectedExampleSolution: Example[A]) extends App:
 
   def name: String
-  def solve(data: Seq[String]): A
-  override def toString = s"Day $day: $name"
+  def solve(data: List[String]): A
+  override def toString = s"Day $day pt$part: $name ($year)"
 
-  private def printlln(x: Any = "")(using printResult: Boolean): Unit = if printResult then println(x)
+  private def printlln(x: Any = "")(using printResult: Boolean) = 
+    if printResult then println(x)
   
   private def error(msg: String, trim: Boolean = false) =
     s"[${RED}!${RESET}] ${if !trim then s"${RED}Something went wrong${RESET} " else ""}$msg"
@@ -30,27 +31,28 @@ abstract class Problem[A]
 
   private def tinyStack(e: Throwable) =
     s"""|[${RED}!${RESET}] ${e.getClass.getSimpleName}: ${e.getMessage}
-        |${e.getStackTrace.toVector
+        |${e.getStackTrace.toList
             .dropWhile(!_.toString.startsWith("aoc"))
             .takeWhile(!_.toString.startsWith("aoc.utils.Problem"))
             .init
             .map(s => s"      $s")
             .mkString("\n")}""".stripMargin
 
-  private val wd = os.pwd / "src" / "main"
+  private val resources = os.pwd / "src" / "main" / "resources"
 
   private def readFile(folder: String, year: String, file: String) =
-    Try(os.read.lines(wd / "resources" / "input" / folder / year / file).toVector) match
+    Try(os.read.lines(resources / "input" / folder / year / file).toList) match
       case Success(lines) => Some(lines)
       case Failure(e) =>
         printlln(s"""|${error(s"when reading $file in $folder/$year")}:
                      |    ${e}""".stripMargin)(using printResult = true)
         None
 
-  val exampleInput = readFile("examples", year, s"$day.txt")
-  val puzzleInput = readFile("puzzles", year, s"$day.txt")
+  private lazy val primaryExampleInput = readFile("examples", year, s"$day.txt")
+  private lazy val secondaryExampleInput = readFile("examples", year, s"$day-secondary.txt")
+  private val puzzleInput = readFile("puzzles", year, s"$day.txt")
 
-  private def solve(data: Option[Vector[String]]): Option[TimedEval[A]] = data.map(d => time(solve(d)))
+  private def solve(data: Option[List[String]]): Option[TimedEval[A]] = data.map(d => time(solve(d)))
 
   /** Attempts to solve the given problem using the given data. 
     * @param printResult Given boolean that decides whether to print the result or not. Defaults to true. 
@@ -74,31 +76,44 @@ abstract class Problem[A]
       None
 
     def solvingSuccess(name: String, eval: TimedEval[A]) =
-      printlln(f"""|${success(s"${name.capitalize} input passed!")}
+      printlln(f"""|${success(s"${name.capitalize} solution found!")}
                    |    Output: ${YELLOW}${eval.result}${RESET}
                    |    Time: ${eval.duration}%2.6f s%n""".stripMargin)
       Some(eval)
 
-    val result = Try(solve(exampleInput)) match
-      case Failure(e) => solvingError("example", e)
+    def solveExample(input: Option[List[String]], solution: A) = 
+      Try(solve(input)) match
+        case Failure(e) => solvingError("example", e)
+        case Success(None) => None
+        case Success(Some(exampleEval)) =>
+          if exampleEval.result != solution
+          then solvingFail("example", exampleEval)
+          else
+            solvingSuccess("example", exampleEval)
+
+    def solvePuzzle = Try(solve(puzzleInput)) match
+      case Failure(e) => solvingError("puzzle", e)
       case Success(None) => None
-      case Success(Some(exampleEval)) =>
-        if exampleEval.result != expectedExampleSolution 
-        then solvingFail("example", exampleEval)
-        else
-          solvingSuccess("example", exampleEval)
-          Try(solve(puzzleInput)) match
-            case Failure(e) => solvingError("puzzle", e)
-            case Success(None) => None
-            case Success(Some(puzzleEval)) => 
-              solvingSuccess("puzzle", puzzleEval)
+      case Success(Some(puzzleEval)) => 
+        solvingSuccess("puzzle", puzzleEval)
+
+    val result = expectedExampleSolution match
+      case Skip => 
+        printlln(info("No example provided, skipping..."))
+        solvePuzzle
+      case sol => 
+        val (exampleInput, solution) = sol match
+          case Primary(solution) => (primaryExampleInput, solution)
+          case Secondary(solution) => (secondaryExampleInput, solution)
+          case Skip => ??? // should be unreachable
+        solveExample(exampleInput, solution).flatMap(_ => solvePuzzle)
 
     result match
       case None => 
       case Some(eval) =>
         val date = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(java.util.Date())
         val res = s"$date;$year;$day;$part;${f"${eval.duration}%2.6f"}s;${eval.result};not submitted"
-        val file = wd / "resources" / "results.csv"
+        val file = resources / "results.csv"
         val current = os.read.lines(file)
         current
           .tail
@@ -114,4 +129,4 @@ abstract class Problem[A]
 
     result
 
-  val result = if exampleInput.isDefined && puzzleInput.isDefined then execute else None
+  val result = if primaryExampleInput.isDefined && puzzleInput.isDefined then execute else None

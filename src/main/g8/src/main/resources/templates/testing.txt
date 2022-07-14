@@ -1,0 +1,8 @@
+import aoc.utils.*
+import Testing.*
+
+val primaryExample = read("examples", "@YEAR", "@DAY")
+// val secondaryExample = read("examples", "@YEAR", "@DAY", false)
+val puzzleData = read("puzzles", "@YEAR", "@DAY")
+val data = primaryExample
+

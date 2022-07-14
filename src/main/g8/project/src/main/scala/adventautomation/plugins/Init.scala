@@ -41,16 +41,20 @@ object Init extends AutoPlugin {
           val testing = file(s"$folder/testing.worksheet.sc")
 
           inf(s"Initializing day $day...")
-          createFile(testing, "")
+          
+          createFile(testing, 
+            IO.read(file("src/main/resources/templates/testing.txt"))
+              .replace("@DAY", day)
+              .replace("@YEAR", year))
 
           createFile(pkg, 
-            IO.read(file(s"src/main/resources/templates/package.txt"))
+            IO.read(file("src/main/resources/templates/package.txt"))
               .replace("@DAY", day)
               .replace("@YEAR", year))
           
           for (n <- 1 to 2) { 
             createFile(part(n), IO
-              .read(file(s"src/main/resources/templates/problem.txt"))
+              .read(file("src/main/resources/templates/problem.txt"))
               .replace("@PART", n.toString)
               .replace("@DAY", day)
               .replace("@NAME", if (nameArgs.isEmpty) "N/A" else nameArgs.mkString(" "))
