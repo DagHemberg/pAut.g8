@@ -9,15 +9,15 @@ trait Graph[V]:
   import Graph.*
   protected given adjacenctTo: (V => Set[Edge[V]])
 
-  def vertices: Set[V]
   def edges: Set[Edge[V]]
   def edgesFrom: Map[V, Set[Edge[V]]]
   def edgesTo: Map[V, Set[Edge[V]]]
+  def vertices: Set[V]
 
   def filterEdges(p: Edge[V] => Boolean): Graph[V]
   def filterVertices(p: V => Boolean): Graph[V]
 
-  def apply(v: V) = adjacenctTo(v)
+  def apply(v: V) = adjacenctTo(v).map(_.to)
   def apply(a: V, b: V) = adjacenctTo(a).find(_.to == b).map(_.weight)
 
   def pathsFrom(start: V) = dijkstra(start)
@@ -79,10 +79,10 @@ case class LazyGraph[V](adjacencyFunction: V => Set[Edge[V]]) extends Graph[V]:
   private val mEdgesFrom = mutable.Map.empty[V, Set[Edge[V]]] withDefaultValue Set.empty
   private val mEdgesTo = mutable.Map.empty[V, Set[Edge[V]]] withDefaultValue Set.empty
 
-  def vertices = mVertices.toSet
   def edges = mEdges.toSet
   def edgesFrom = mEdgesFrom.toMap 
   def edgesTo = mEdgesTo.toMap
+  def vertices = mVertices.toSet
 
   protected final given adjacenctTo: (V => Set[Edge[V]]) = v => 
     if mEdgesFrom isDefinedAt v then mEdgesFrom(v)
@@ -103,9 +103,9 @@ case class LazyGraph[V](adjacencyFunction: V => Set[Edge[V]]) extends Graph[V]:
 case class FiniteGraph[V](private val elems: Set[Edge[V]]) extends Graph[V]:
   override def toString = s"Graph(${elems.mkString(", ")})"
   val edges = elems
-  lazy val vertices = elems.flatMap(e => Set(e.u, e.v))
   lazy val edgesFrom = edges.groupBy(_.from) withDefaultValue Set.empty
   lazy val edgesTo = edges.groupBy(_.to) withDefaultValue Set.empty
+  lazy val vertices = elems.flatMap(e => Set(e.u, e.v))
 
   protected final given adjacenctTo: (V => Set[Edge[V]]) = edgesFrom.apply
 
