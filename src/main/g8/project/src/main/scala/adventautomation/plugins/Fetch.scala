@@ -24,7 +24,7 @@ object Fetch extends AutoPlugin {
         if (year == "N/A") {
           error("Please set the year using 'year set <year>' before fetching the input data.")
         } else {
-          val primarySampleFile = file(s"src/main/resources/input/examples/$year/$day.txt")
+          val primarySampleFile = file(s"src/main/resources/input/examples/$year/$day-primary.txt")
           val secondarySampleFile = file(s"src/main/resources/input/examples/$year/$day-secondary.txt")
           val puzzleFile = file(s"src/main/resources/input/puzzles/$year/$day.txt")
           if (Seq(primarySampleFile, secondarySampleFile, puzzleFile).exists(_.exists())) {
@@ -50,6 +50,7 @@ object Fetch extends AutoPlugin {
               case data => {
                 IO.write(puzzleFile, data)
                 IO.write(primarySampleFile, s"Please paste the example input for day $day here!")
+                IO.write(secondarySampleFile, s"If there's another example for the second problem, paste that here!")
                 sys.props("os.name") match {
                   case os if os.startsWith("Windows") => s"cmd /c start ${primarySampleFile.getPath()}".!!
                   case os if os.toLowerCase.contains("mac") => s"open ${primarySampleFile.getPath()}".!! // not tested

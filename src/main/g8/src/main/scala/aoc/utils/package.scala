@@ -228,10 +228,10 @@ package object utils:
     def toPos3D = (q, r, s)
     def toVec3 = (x, y, z)
 
-  sealed trait Example[A]
-  case class Primary[A](sol: A) extends Example[A]
-  case class Secondary[A](sol: A) extends Example[A]
-  case object Skip extends Example[Any]
+  sealed trait Example[A](val solution: A)
+  case object Skip extends Example[Any](None)
+  case class Primary[A](override val solution: A) extends Example[A](solution)
+  case class Secondary[A](override val solution: A) extends Example[A](solution)
 
   /** A simple wrapper class that includes the result of an evaluation and the time (in seconds) it took to evaluate it
    * @param result The final evaluation
@@ -249,6 +249,5 @@ package object utils:
     def logTime[A](block: => A) = time(block).logAttr(_.duration).result
 
   object Testing:
-    val inputPath = os.pwd / "src" / "main" / "resources" / "input"
-    def read(folder: String, year: String, day: String, primary: Boolean = true) = 
-      os.read.lines(inputPath / folder / year / (if primary then s"$day.txt" else s"$day-secondary.txt")).toList
+    def read(folder: String, year: String, day: String) = 
+      os.read.lines(os.pwd / "src" / "main" / "resources" / "input" / folder / year / s"$day.txt").toList
