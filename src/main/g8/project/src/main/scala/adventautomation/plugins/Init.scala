@@ -36,7 +36,7 @@ object Init extends AutoPlugin {
             if (nameArgs.isEmpty) "" 
             else s"-${nameArgs.mkString("-").toLowerCase}"
           }"
-          val pkg = file(s"$folder/package.scala")
+          val util = file(s"$folder/utilities.scala")
           def part(n: Int) = file(s"$folder/Part$n.scala")
           val testing = file(s"$folder/testing.worksheet.sc")
 
@@ -47,8 +47,8 @@ object Init extends AutoPlugin {
               .replace("@DAY", day)
               .replace("@YEAR", year))
 
-          createFile(pkg, 
-            IO.read(file("src/main/resources/templates/package.txt"))
+          createFile(util, 
+            IO.read(file("src/main/resources/templates/utilities.txt"))
               .replace("@DAY", day)
               .replace("@YEAR", year))
           

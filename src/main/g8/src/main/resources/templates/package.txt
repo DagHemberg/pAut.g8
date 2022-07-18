@@ -1,6 +1,0 @@
-package aoc.y@YEAR
-import aoc.utils.*
-
-package object day@DAY:
-  def parse(data: List[String]) = 
-    ???
