@@ -1,2 +1,1 @@
-addSbtPlugin("com.typesafe.sbt" % "sbt-site" % "1.4.1")
-addSbtPlugin("com.typesafe.sbt" % "sbt-ghpages" % "0.6.3")
+addSbtPlugin("io.github.daghemberg" % "sbt-paut" % "0.1.0")

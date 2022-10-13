@@ -1,7 +1,0 @@
-package aoc.y@YEAR.day@DAY
-import aoc.utils.*
-
-object Part@PART extends Problem("@YEAR", "@DAY", "@PART")(Primary(???)):
-  def name = "@NAME - Part @PART"
-  def solve(data: List[String]) = 
-    ???

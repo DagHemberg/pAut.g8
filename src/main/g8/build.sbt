@@ -1,24 +1,12 @@
-import adventautomation.plugins._
-import adventautomation.utils.SettingsManager
-import adventautomation.commands.Year._
-
-val scala3Version = "3.1.3"
-
-lazy val projectName = s"aoc-${SettingsManager.get("year").getOrElse("N/A")}"
+name := "aoc"
 
 lazy val root = project
   .in(file("."))
-  .enablePlugins(Auth, Fetch, Init, Submit, Stats)
-  .enablePlugins(SiteScaladocPlugin, GhpagesPlugin)
   .settings(
-    SiteScaladoc / siteSubdirName := "api/latest",
-    git.remoteRepo := "git@github.com:DagHemberg/AdventAutomation.g8.git",
-    name := projectName,
-    version := "0.3",
-    scalaVersion := scala3Version,
-    commands ++= Seq(year),
+    scalaVersion := "3.2.0",
     libraryDependencies ++= Seq(
-      "com.lihaoyi" %% "os-lib" % "0.8.0"
-      // add your library dependencies here!
-    ),
+      "io.github.daghemberg" %% "paut-program" % "0.1.0",
+      "io.github.daghemberg" %% "problemutils" % "0.1.1",
+      // add your own dependencies here!
+    )
   )

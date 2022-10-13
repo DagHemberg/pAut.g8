@@ -1,3 +1,0 @@
-year=N/A
-token=
-username=

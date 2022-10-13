@@ -6,9 +6,9 @@ You can view the code docs [here](https://daghemberg.github.io/AdventAutomation.
 
 ## Program Usage
 
-To use this template program, run 
+To use this template program, run
 
-```
+```shell
 sbt new DagHemberg/AdventAutomation.g8
 ```
 
