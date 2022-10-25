@@ -5,7 +5,7 @@ lazy val root = project
   .settings(
     scalaVersion := "3.2.0",
     libraryDependencies ++= Seq(
-      "io.github.daghemberg" %% "paut-program" % "0.1.0",
+      "io.github.daghemberg" %% "paut-program" % "0.1.3",
       "io.github.daghemberg" %% "problemutils" % "0.1.1",
       // add your own dependencies here!
     )

@@ -1,1 +1,1 @@
-addSbtPlugin("io.github.daghemberg" % "sbt-paut" % "0.1.0")
+addSbtPlugin("io.github.daghemberg" % "sbt-paut" % "0.1.5")
