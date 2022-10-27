@@ -86,7 +86,7 @@ When running the command mentioned in the above section, a file containing the f
 // imports
 
 object Part1 extends Problem(13, 2017)(1)(???):
-  def name = "Some Name - Part 1"
+  def name = "Packet Scanners - Part 1"
   def solve(data: List[String]) = ???
 ```
 
