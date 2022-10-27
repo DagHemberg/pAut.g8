@@ -2,8 +2,6 @@
 
 pAut (short for **p**roblem **aut**omation) is a collection of libraries made for streamlining the process of solving problems in [Advent of Code](https://adventofcode.com).
 
----
-
 ## Quickstart
 
 Run
@@ -34,8 +32,6 @@ libraryDependencies ++= Seq(
 ```
 
 to your `build.sbt`.
-
----
 
 ## Usage
 
