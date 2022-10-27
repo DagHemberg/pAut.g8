@@ -2,9 +2,13 @@
 
 pAut (short for **p**roblem **aut**omation) is a collection of libraries made for streamlining the process of solving problems in [Advent of Code](https://adventofcode.com).
 
+- [sbt-pAut](https://github.com/DagHemberg/sbt-pAut)
+- [pAut-program](https://github.com/DagHemberg/pAut-program)
+- [ProblemUtils](https://github.com/DagHemberg/ProblemUtils)
+
 ## Quickstart
 
-Run
+Make sure you have sbt installed, and run
 
 ```text
 sbt new DagHemberg/pAut.g8
@@ -90,7 +94,7 @@ object Part1 extends Problem(13, 2017)(1)(???):
   def solve(data: List[String]) = ???
 ```
 
-The Problem class extends `App`, meaning each Part object becomes its own runnable program -- simply type `run` in the sbt console.
+The Problem class extends `App`, meaning each Part object becomes its own runnable program -- simply type `run` in the sbt console and select which problem to solve.
 
 `(13, 2017)(1)` represents the day, year and part of the problem which the program is attempting to solve -- so the example above would represent the first part of the problem published on December 13, 2017.
 
