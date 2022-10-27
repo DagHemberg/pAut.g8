@@ -19,7 +19,7 @@ in your shell of choice. This will create a new folder in your current directory
 If you instead want to add all dependencies manually, start by adding
 
 ```sbt
-addSbtPlugin("io.github.daghemberg" % "sbt-paut" % "0.1.5")
+addSbtPlugin("io.github.daghemberg" % "sbt-paut" % "0.1.6")
 ```
 
 to the `plugins.sbt` file in your `project` folder. (If the file doesn't exist, you can add it manually.)
@@ -28,7 +28,7 @@ Keep in mind that files created by this assume that you're also using the pAut-p
 
 ```sbt
 libraryDependencies ++= Seq(
-  "io.github.daghemberg" %% "paut-program" % "0.1.3",
+  "io.github.daghemberg" %% "paut-program" % "0.1.4",
   "io.github.daghemberg" %% "problemutils" % "0.1.1"
 )
 ```
