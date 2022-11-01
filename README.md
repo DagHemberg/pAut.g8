@@ -2,19 +2,36 @@
 
 pAut (short for **p**roblem **aut**omation) is a collection of libraries made for streamlining the process of solving problems in [Advent of Code](https://adventofcode.com).
 
-- [sbt-pAut](https://github.com/DagHemberg/sbt-pAut)
-- [pAut-program](https://github.com/DagHemberg/pAut-program)
-- [ProblemUtils](https://github.com/DagHemberg/ProblemUtils)
+## Contents
+
+- [pAut](#paut)
+  - [Contents](#contents)
+  - [Quickstart](#quickstart)
+  - [Manual installation](#manual-installation)
+  - [Usage](#usage)
+    - [Authenticating](#authenticating)
+    - [Initializing problems](#initializing-problems)
+      - [Example input file](#example-input-file)
+    - [Solving problems](#solving-problems)
+      - [Automatic testing](#automatic-testing)
+      - [Multiple example files](#multiple-example-files)
+    - [Viewing and submitting results](#viewing-and-submitting-results)
+    - [Default year](#default-year)
+      - [The 'today' keyword](#the-today-keyword)
 
 ## Quickstart
 
 Make sure you have sbt installed, and run
 
 ```text
-sbt new DagHemberg/pAut.g8
+sbt new daghemberg/pAut.g8
 ```
 
-in your shell of choice. This will create a new folder in your current directory with the necessary library and plugin dependencies required to run the program.
+in your shell of choice. This will create a new folder in your current directory with the necessary library and plugin dependencies required to run the program, namely:
+
+- [sbt-pAut](https://github.com/DagHemberg/sbt-pAut) - an sbt plugin that enables quick and easy fetching of problem data and submitting of probllem solutions to the Advent of Code webiste.
+- [pAut-program](https://github.com/DagHemberg/pAut-program) - a library which provides a framework for easy testing and and running of Advent of Code problems.
+- [ProblemUtils](https://github.com/DagHemberg/ProblemUtils) - a utility library with many useful classes and extension methods for problem solving.
 
 ## Manual installation
 
@@ -182,4 +199,4 @@ aoc data fetchManually today
 aoc results submit 2 today
 ```
 
-Note: new problems are published 00:00 / 12:00AM EST
+Note: new problems are usually published 00:00 / 12:00AM EST
