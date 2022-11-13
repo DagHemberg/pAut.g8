@@ -29,7 +29,7 @@ sbt new daghemberg/pAut.g8
 
 in your shell of choice. This will create a new folder in your current directory with the necessary library and plugin dependencies required to run the program, namely:
 
-- [sbt-pAut](https://github.com/DagHemberg/sbt-pAut) - an sbt plugin that enables quick and easy fetching of problem data and submitting of probllem solutions to the Advent of Code webiste.
+- [sbt-pAut](https://github.com/DagHemberg/sbt-pAut) - an sbt plugin that enables quick and easy fetching of problem data and submitting of problem solutions to the Advent of Code website.
 - [pAut-program](https://github.com/DagHemberg/pAut-program) - a library which provides a framework for easy testing and and running of Advent of Code problems.
 - [ProblemUtils](https://github.com/DagHemberg/ProblemUtils) - a utility library with many useful classes and extension methods for problem solving.
 
@@ -38,7 +38,7 @@ in your shell of choice. This will create a new folder in your current directory
 If you instead want to add all dependencies manually, start by adding
 
 ```sbt
-addSbtPlugin("io.github.daghemberg" % "sbt-paut" % "0.1.6")
+addSbtPlugin("io.github.daghemberg" % "sbt-paut" % "0.1.7")
 ```
 
 to the `plugins.sbt` file in your `project` folder. (If the file doesn't exist, you can add it manually.)
@@ -86,7 +86,7 @@ The command will also automatically download and cache the input data for the da
 
 #### Example input file
 
-When running `initProblem` commmand, a new file will be opened in your default text editor telling you to "Paste your example data here!". Problems in Advent of Code often have smaller "sample" inputs, along with the solution to the problem, given that input data. For December 13, 2017, that sample data was
+When running `initProblem` command, a new file will be opened in your default text editor telling you to "Paste your example data here!". Problems in Advent of Code often have smaller "sample" inputs, along with the solution to the problem, given that input data. For December 13, 2017, that sample data was
 
 ```text
 0: 3
@@ -115,7 +115,7 @@ The Problem class extends `App`, meaning each Part object becomes its own runnab
 
 `(13, 2017)(1)` represents the day, year and part of the problem which the program is attempting to solve -- so the example above would represent the first part of the problem published on December 13, 2017.
 
-Following those is `(???)`, which is the expected solution to the example input data. The question marks are just a placeholder, meaning you have to replace them yourself with the expected solution (given the example input) for the problem in question. For Decemer 13 part 1, 2017, this solution is `24`, and so is what you'd put in place of the question marks. This argument is also generic, meaning you can have `Int`s, `Double`s, `String`s, or even your own class as your expected output, depending on what the problem is asking of you.
+Following those is `(???)`, which is the expected solution to the example input data. The question marks are just a placeholder, meaning you have to replace them yourself with the expected solution (given the example input) for the problem in question. For December 13 part 1, 2017, this solution is `24`, and so is what you'd put in place of the question marks. This argument is also generic, meaning you can have `Int`s, `Double`s, `String`s, or even your own class as your expected output, depending on what the problem is asking of you.
 
 The `solve` method is what actually gets evaluated when you run the program. The input data is given as a list of strings, and it's up to you to determine what to do with it to solve the problem.
 
