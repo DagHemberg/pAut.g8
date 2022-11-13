@@ -111,7 +111,7 @@ object Part1 extends Problem(13, 2017)(1)(???):
   def solve(data: List[String]) = ???
 ```
 
-The Problem class extends `App`, meaning each Part object becomes its own runnable program -- simply type `run` in the sbt console and select which problem to solve.
+The Problem class extends `App`, meaning each `PartX` object becomes its own runnable program -- simply type `run` in the sbt shell and select which problem to solve.
 
 `(13, 2017)(1)` represents the day, year and part of the problem which the program is attempting to solve -- so the example above would represent the first part of the problem published on December 13, 2017.
 
@@ -199,4 +199,4 @@ aoc data fetchManually today
 aoc results submit 2 today
 ```
 
-Note: new problems are usually published 00:00 / 12:00AM EST
+Note: new problems are usually published at 00:00 / 12:00AM EST
