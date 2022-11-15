@@ -38,7 +38,7 @@ in your shell of choice. This will create a new folder in your current directory
 If you instead want to add all dependencies manually, start by adding
 
 ```sbt
-addSbtPlugin("io.github.daghemberg" % "sbt-paut" % "0.1.7")
+addSbtPlugin("io.github.daghemberg" % "sbt-paut" % "0.1.8")
 ```
 
 to the `plugins.sbt` file in your `project` folder. (If the file doesn't exist, you can add it manually.)
@@ -76,13 +76,13 @@ In order to initialize problem files and submit results, you need to authenticat
 
 ### Initializing problems
 
-The command for initializing a new problem is structured as follows: `aoc data initProblem "<name>" <day> [year]` -- so if you wanted to solve the problem(s) from December 13, 2017, you'd run `aoc data initProblem "Packet Scanners" 13 2017`. This would create a folder under `./src/main/scala/aoc` named `13-packet-scanners` containing 4 files:
+The command for initializing a new problem is structured as follows: `aoc init "<name>" <day> [year]` -- so if you wanted to solve the problem(s) from December 13, 2017, you'd run `aoc init "Packet Scanners" 13 2017`. This would create a folder under `./src/main/scala/aoc` named `13-packet-scanners` containing 4 files:
 
 - 2 "problem files" (`Part1.scala` and `Part2.scala`)
 - A `package.scala` meant to be used for any code shared between the 2 parts
 - A `testing.worksheet.sc` as a sort of coding whiteboard where you can try out ideas and have them immediately evaluated.
 
-The command will also automatically download and cache the input data for the day in question -- but if something goes wrong during this process, you can manually download the correct data yourself using the `aoc data fetchManual` command.
+The command will also automatically download and cache the input data for the day in question -- but if something goes wrong during this process, you can manually download the correct data yourself using the `aoc data fetchInput` command. The same goes for initializing the files -- you can run `aoc data createFiles` to manually create the files mentioned above.
 
 #### Example input file
 
@@ -121,7 +121,7 @@ The `solve` method is what actually gets evaluated when you run the program. The
 
 #### Automatic testing
 
-`solve` is used twice when running the program -- once for the example data, and once, if the solution given by `solve` matches the expected solution, for the actual input data.
+The `solve` method is used twice when running the program -- once for the example data, and once, if the solution given by `solve` matches the expected solution, for the actual input data.
 
 ```text
 [+] Day 1: Some problem - Part 1 (2022)
@@ -194,8 +194,9 @@ You can, of course, also manually set the default year using `aoc defaultYear se
 If you're actively following and solving new problems as they're being released, you can use the `today` keyword anywhere a date is being asked for in the `aoc` command, given that a problem was actually published that day. For example:
 
 ```text
-aoc data initProblem "Just some name" today
-aoc data fetchManually today
+aoc init "Just some name" today
+aoc data fetchInput today
+aoc data openExample 1 today
 aoc results submit 2 today
 ```
 
