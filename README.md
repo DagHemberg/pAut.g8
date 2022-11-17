@@ -56,7 +56,14 @@ to your `build.sbt`.
 
 ## Usage
 
-When you've initialized the project, `cd` into it and type `sbt` to start the sbt console. The sbt-pAut plugin adds a new command to sbt, `aoc`, which contains multiple subcommands.
+Once you've initialized the project,
+
+1. `cd` into it.
+2. (optional) Run `git init` to initialize an empty git repository.
+3. Open the directory in your editor / IDE of choice (`code .`, `idea .`, etc).
+4. Run `sbt` to start the sbt console (you can also do this step in your editor's built-in terminal, of course).
+
+The sbt-pAut plugin adds a new command to sbt, `aoc`, which contains multiple subcommands.
 
 `aoc <help | auth | data | results>`
 
