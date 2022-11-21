@@ -63,11 +63,11 @@ Once you've initialized the project,
 3. Open the directory in your editor / IDE of choice (`code .`, `idea .`, etc).
 4. Run `sbt` to start the sbt console (you can also do this step in your editor's built-in terminal, of course).
 
-The sbt-pAut plugin adds a new command to sbt, `aoc`, which contains multiple subcommands.
+The sbt-pAut plugin adds a new task to sbt, `aoc`, which contains multiple subcommands.
 
-`aoc <help | auth | data | results>`
+`aoc <auth | data | defaultYear | help | init | results>`
 
-Each of these subcommands also contain their own subcommands -- for a more thorough explanation of what each command does, type `aoc help` and hit the Tab key to see what commands are available.
+For a more thorough explanation of what each subcommand does, type `aoc help` and hit the Tab key to see what commands are available and how to use them.
 
 ### Authenticating
 
