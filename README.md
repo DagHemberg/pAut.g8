@@ -124,7 +124,7 @@ The Problem class extends `App`, meaning each `PartX` object becomes its own run
 
 Following those is `(???)`, which is the expected solution to the example input data. The question marks are just a placeholder, meaning you have to replace them yourself with the expected solution (given the example input) for the problem in question. For December 13 part 1, 2017, this solution is `24`, and so is what you'd put in place of the question marks. This argument is also generic, meaning you can have `Int`s, `Double`s, `String`s, or even your own class as your expected output, depending on what the problem is asking of you.
 
-The `solve` method is what actually gets evaluated when you run the program. The input data is given as a list of strings, and it's up to you to determine what to do with it to solve the problem.
+The `solve` method is what actually gets evaluated when you run the program -- think of it as your `main` method. The input data is given as a list of strings (`data: List[String]`), and it's up to you to determine what to do with it to solve the problem.
 
 #### Automatic testing
 
